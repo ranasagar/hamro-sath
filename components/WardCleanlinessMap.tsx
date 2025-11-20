@@ -1,17 +1,7 @@
-import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  MapPin,
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  Award,
-  Users,
-  Activity,
-  X,
-  ChevronRight,
-} from 'lucide-react';
-import { useWardScores, useWardDashboard } from '../hooks/useCivicHub';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Activity, Award, MapPin, Minus, TrendingDown, TrendingUp, Users, X } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { useWardDashboard, useWardScores } from '../hooks/useCivicHub';
 
 interface WardDetailModalProps {
   wardId: number;
@@ -59,7 +49,7 @@ const WardDetailModal: React.FC<WardDetailModalProps> = ({ wardId, onClose }) =>
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.9, y: 20 }}
         className="bg-white rounded-3xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
       >
         <button
           onClick={onClose}
@@ -116,9 +106,7 @@ const WardDetailModal: React.FC<WardDetailModalProps> = ({ wardId, onClose }) =>
               <Users className="w-5 h-5 text-blue-500" />
               <span className="text-sm text-gray-600">Active Users</span>
             </div>
-            <div className="text-3xl font-bold text-gray-800">
-              {dashboard.activeUsers || 0}
-            </div>
+            <div className="text-3xl font-bold text-gray-800">{dashboard.activeUsers || 0}</div>
           </div>
 
           <div className="bg-white border-2 border-gray-100 rounded-xl p-4">
@@ -126,9 +114,7 @@ const WardDetailModal: React.FC<WardDetailModalProps> = ({ wardId, onClose }) =>
               <Activity className="w-5 h-5 text-purple-500" />
               <span className="text-sm text-gray-600">Issues Resolved</span>
             </div>
-            <div className="text-3xl font-bold text-gray-800">
-              {dashboard.issuesResolved || 0}
-            </div>
+            <div className="text-3xl font-bold text-gray-800">{dashboard.issuesResolved || 0}</div>
           </div>
 
           <div className="bg-white border-2 border-gray-100 rounded-xl p-4">
@@ -136,9 +122,7 @@ const WardDetailModal: React.FC<WardDetailModalProps> = ({ wardId, onClose }) =>
               <MapPin className="w-5 h-5 text-red-500" />
               <span className="text-sm text-gray-600">Projects</span>
             </div>
-            <div className="text-3xl font-bold text-gray-800">
-              {dashboard.activeProjects || 0}
-            </div>
+            <div className="text-3xl font-bold text-gray-800">{dashboard.activeProjects || 0}</div>
           </div>
         </div>
 
@@ -148,10 +132,7 @@ const WardDetailModal: React.FC<WardDetailModalProps> = ({ wardId, onClose }) =>
             <h3 className="text-lg font-bold text-gray-800 mb-3">Recent Activity</h3>
             <div className="space-y-2">
               {dashboard.recentActivities.slice(0, 5).map((activity, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
-                >
+                <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                   <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
                   <p className="text-sm text-gray-700 flex-1">{activity.description}</p>
                   <span className="text-xs text-gray-500">
@@ -190,7 +171,7 @@ export const WardCleanlinessMap: React.FC<WardCleanlinessMapsProps> = ({ onNavig
 
   const filteredScores = useMemo(() => {
     if (filterTrend === 'all') return scores;
-    return scores.filter((score) => score.trend === filterTrend);
+    return scores.filter(score => score.trend === filterTrend);
   }, [scores, filterTrend]);
 
   const getScoreColor = (score: number) => {
@@ -270,7 +251,9 @@ export const WardCleanlinessMap: React.FC<WardCleanlinessMapsProps> = ({ onNavig
                 ward.score
               )} rounded-xl p-4 shadow-md text-white`}
             >
-              <div className="text-sm opacity-90 mb-1">#{index + 1} Ward {ward.wardId}</div>
+              <div className="text-sm opacity-90 mb-1">
+                #{index + 1} Ward {ward.wardId}
+              </div>
               <div className="text-3xl font-bold">{ward.score}</div>
             </div>
           ))}
@@ -285,7 +268,7 @@ export const WardCleanlinessMap: React.FC<WardCleanlinessMapsProps> = ({ onNavig
         >
           <div className="flex gap-2 flex-wrap">
             <span className="text-sm font-medium text-gray-600 self-center">Filter by trend:</span>
-            {(['all', 'improving', 'stable', 'declining'] as const).map((trend) => (
+            {(['all', 'improving', 'stable', 'declining'] as const).map(trend => (
               <button
                 key={trend}
                 onClick={() => setFilterTrend(trend)}
@@ -350,12 +333,8 @@ export const WardCleanlinessMap: React.FC<WardCleanlinessMapsProps> = ({ onNavig
 
                 {/* Trend indicator */}
                 <div className="absolute top-2 right-2">
-                  {ward.trend === 'improving' && (
-                    <TrendingUp className="w-4 h-4 text-white/80" />
-                  )}
-                  {ward.trend === 'declining' && (
-                    <TrendingDown className="w-4 h-4 text-white/80" />
-                  )}
+                  {ward.trend === 'improving' && <TrendingUp className="w-4 h-4 text-white/80" />}
+                  {ward.trend === 'declining' && <TrendingDown className="w-4 h-4 text-white/80" />}
                 </div>
               </div>
             </motion.div>
