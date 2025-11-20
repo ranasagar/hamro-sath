@@ -16,22 +16,22 @@ const LeaderboardTabs: React.FC<{ activeTab: string; setActiveTab: (tab: string)
   activeTab,
   setActiveTab,
 }) => (
-  <div className="mb-4 flex border-b border-gray-200 overflow-x-auto">
+  <div className="mb-4 flex border-b border-gray-200/50 overflow-x-auto hide-scrollbar bg-white/70 backdrop-blur-xl rounded-2xl p-2">
     <button
       onClick={() => setActiveTab('individual')}
-      className={`px-4 py-2 font-semibold whitespace-nowrap ${activeTab === 'individual' ? 'border-b-2 border-brand-green text-brand-green' : 'text-gray-500'}`}
+      className={`px-4 py-2 font-semibold whitespace-nowrap rounded-xl transition-all ${activeTab === 'individual' ? 'bg-[#007AFF] text-white shadow-lg' : 'text-gray-500 hover:text-[#007AFF]'}`}
     >
       Top Safa Heroes
     </button>
     <button
       onClick={() => setActiveTab('ward')}
-      className={`px-4 py-2 font-semibold whitespace-nowrap ${activeTab === 'ward' ? 'border-b-2 border-brand-green text-brand-green' : 'text-gray-500'}`}
+      className={`px-4 py-2 font-semibold whitespace-nowrap rounded-xl transition-all ${activeTab === 'ward' ? 'bg-[#007AFF] text-white shadow-lg' : 'text-gray-500 hover:text-[#007AFF]'}`}
     >
       Top Wards
     </button>
     <button
       onClick={() => setActiveTab('challenges')}
-      className={`px-4 py-2 font-semibold whitespace-nowrap ${activeTab === 'challenges' ? 'border-b-2 border-purple-600 text-purple-600' : 'text-gray-500'}`}
+      className={`px-4 py-2 font-semibold whitespace-nowrap rounded-xl transition-all ${activeTab === 'challenges' ? 'bg-[#AF52DE] text-white shadow-lg' : 'text-gray-500 hover:text-[#AF52DE]'}`}
     >
       Mayor's Challenges
     </button>
@@ -54,19 +54,26 @@ const UserRankItem: React.FC<{ user: UserRank }> = ({ user }) => {
   const rankTextClass = user.rank <= 3 ? rankTextClasses[user.rank as 1 | 2 | 3] : 'text-gray-500';
 
   return (
-    <li className={`flex items-center p-3 rounded-lg shadow-subtle mb-2 gap-4 border ${rankClass}`}>
+    <li
+      className={`flex items-center p-4 rounded-2xl shadow-md hover:shadow-xl mb-3 gap-4 border border-white/50 backdrop-blur-xl transition-all ${rankClass}`}
+    >
       <span
         className={`font-bold text-xl w-10 text-center flex items-center justify-center gap-1 ${rankTextClass}`}
       >
         {user.rank <= 3 ? <TrophyIcon className="w-6 h-6" /> : user.rank}
       </span>
-      <img src={user.avatar} alt={user.name} className="w-12 h-12 rounded-full" loading="lazy" />
+      <img
+        src={user.avatar}
+        alt={user.name}
+        className="w-12 h-12 rounded-full border-2 border-white shadow-md"
+        loading="lazy"
+      />
       <div className="flex-grow">
-        <p className="font-semibold text-gray-800">{user.name}</p>
+        <p className="font-semibold text-[#1C1C1E]">{user.name}</p>
         <p className="text-sm text-gray-500">{user.ward}</p>
       </div>
-      <span className="font-bold text-brand-green">
-        {(user.points || 0).toLocaleString()} Karma
+      <span className="font-bold text-[#007AFF] bg-white/50 px-3 py-1 rounded-full text-sm shadow-sm">
+        {(user.points || 0).toLocaleString()} SP
       </span>
     </li>
   );
@@ -188,26 +195,26 @@ const ChallengesTab: React.FC = () => {
 
       {/* Challenge Details */}
       {selectedChallenge && (
-        <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 mb-6 border-2 border-purple-200">
+        <div className="bg-gradient-to-br from-[#AF52DE]/10 to-[#AF52DE]/20 rounded-2xl p-6 mb-6 border border-[#AF52DE]/30 backdrop-blur-xl shadow-lg animate-shine">
           <div className="flex items-start justify-between mb-3">
-            <h3 className="font-bold text-xl text-purple-900">{selectedChallenge.title}</h3>
+            <h3 className="font-bold text-xl text-[#1C1C1E]">{selectedChallenge.title}</h3>
             {selectedChallenge.ward_name && (
-              <span className="text-xs bg-purple-600 text-white px-3 py-1 rounded-full font-semibold">
+              <span className="text-xs bg-[#AF52DE] text-white px-3 py-1 rounded-full font-semibold shadow-md">
                 {selectedChallenge.ward_name}
               </span>
             )}
           </div>
-          <p className="text-purple-800 mb-4">{selectedChallenge.description}</p>
+          <p className="text-gray-700 mb-4">{selectedChallenge.description}</p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
             <div>
-              <span className="text-purple-600 font-semibold">Target:</span>
-              <p className="text-purple-900 font-bold">
-                {(selectedChallenge.target_points || 0).toLocaleString()} Karma
+              <span className="text-[#AF52DE] font-semibold">Target:</span>
+              <p className="text-[#1C1C1E] font-bold">
+                {(selectedChallenge.target_points || 0).toLocaleString()} SP
               </p>
             </div>
             <div>
-              <span className="text-purple-600 font-semibold">Starts:</span>
-              <p className="text-purple-900">{formatDate(selectedChallenge.start_date)}</p>
+              <span className="text-[#AF52DE] font-semibold">Starts:</span>
+              <p className="text-[#1C1C1E]">{formatDate(selectedChallenge.start_date)}</p>
             </div>
             <div>
               <span className="text-purple-600 font-semibold">Ends:</span>

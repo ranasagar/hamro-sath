@@ -61,7 +61,7 @@ const RecycleLogModal: React.FC<RecycleLogModalProps> = ({ onClose, onSubmit }) 
         <form onSubmit={handleSubmit}>
           <div className="p-6 space-y-4">
             <p className="text-sm text-gray-600">
-              Select the materials you dropped off at a recycling center. You'll earn 75 SP for your
+              Select the materials you dropped off at a recycling center. You'll earn 75 KP for your
               effort!
             </p>
 
@@ -100,7 +100,7 @@ const RecycleLogModal: React.FC<RecycleLogModalProps> = ({ onClose, onSubmit }) 
               disabled={isSubmitting || selectedMaterials.size === 0}
               className="px-4 py-2 bg-brand-green text-white rounded-md hover:bg-brand-green-dark disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? 'Logging...' : 'Log & Earn 75 SP'}
+              {isSubmitting ? 'Logging...' : 'Log & Earn 75 KP'}
             </button>
           </div>
         </form>

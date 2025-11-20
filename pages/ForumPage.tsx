@@ -1,14 +1,14 @@
 import React from 'react';
-import { ForumThread, UserRank, ForumPost } from '../types';
+import { ForumPost, ForumThread, UserRank } from '../types';
 // FIX: Added missing icon imports
 import {
+  ArrowDownwardIcon,
+  ArrowUpwardIcon,
+  ClockIcon,
+  ForumIcon,
+  ImageIcon,
   ReplyIcon,
   TrendingUpIcon,
-  ArrowUpwardIcon,
-  ArrowDownwardIcon,
-  ImageIcon,
-  ForumIcon,
-  ClockIcon,
 } from '../components/Icons';
 
 interface ForumPageProps {
@@ -45,18 +45,18 @@ const ThreadCard: React.FC<{
   };
 
   return (
-    <div className="flex bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
-      <div className="flex flex-col items-center justify-start p-3 bg-gray-50 rounded-l-lg">
+    <div className="flex bg-white/85 backdrop-blur-xl rounded-2xl shadow-md hover:shadow-xl transition-all border border-white/50">
+      <div className="flex flex-col items-center justify-start p-3 bg-gray-50/50 rounded-l-2xl">
         <button
           onClick={e => handleVoteClick(e, 1)}
-          className={`p-1 rounded-full ${userVote === 1 ? 'text-white bg-brand-green' : 'text-gray-500 hover:bg-green-100'}`}
+          className={`p-1.5 rounded-full transition-all ${userVote === 1 ? 'text-white bg-[#34C759] shadow-md scale-110' : 'text-gray-500 hover:bg-green-100'}`}
         >
           <ArrowUpwardIcon />
         </button>
-        <span className="font-bold text-lg my-1 text-gray-700">{originalPost.score}</span>
+        <span className="font-bold text-lg my-1 text-[#1C1C1E]">{originalPost.score}</span>
         <button
           onClick={e => handleVoteClick(e, -1)}
-          className={`p-1 rounded-full ${userVote === -1 ? 'text-white bg-red-500' : 'text-gray-500 hover:bg-red-100'}`}
+          className={`p-1.5 rounded-full transition-all ${userVote === -1 ? 'text-white bg-[#FF3B30] shadow-md scale-110' : 'text-gray-500 hover:bg-red-100'}`}
         >
           <ArrowDownwardIcon />
         </button>

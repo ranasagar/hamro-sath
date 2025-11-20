@@ -140,11 +140,11 @@ const SuppliesPage: React.FC<SuppliesPageProps> = ({
         <ol className="list-decimal list-inside text-sm text-gray-600 space-y-2">
           <li>
             <strong>Option A:</strong> Visit any Safa Supply Point, ask for a free kit, clean up a
-            small area, then log your pick-up in the app to earn 25 SP. (Limit 1 per day)
+            small area, then log your pick-up in the app to earn 25 KP. (Limit 1 per day)
           </li>
           <li>
             <strong>Option B:</strong> Purchase your own gloves and bags, clean an area, then submit
-            a photo of your receipt to get 100 SP back! Our team will approve it within 24 hours.
+            a photo of your receipt to get 100 KP back! Our team will approve it within 24 hours.
           </li>
         </ol>
       </div>

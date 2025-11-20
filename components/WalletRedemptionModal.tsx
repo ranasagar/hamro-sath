@@ -43,7 +43,7 @@ const WalletRedemptionModal: React.FC<WalletRedemptionModalProps> = ({
           <div className="p-6 space-y-4">
             <p className="text-sm text-gray-600">
               You are redeeming <span className="font-semibold">{reward.title}</span> for{' '}
-              <span className="font-semibold">{reward.cost.toLocaleString()} SP</span>.
+              <span className="font-semibold">{reward.cost.toLocaleString()} KP</span>.
             </p>
 
             <div>

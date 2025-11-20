@@ -19,13 +19,13 @@ import CompleteEventModal from '../components/CompleteEventModal';
 import Heatmap from '../components/Heatmap';
 import {
   AddTaskIcon,
+  AlertIcon,
   BroomIcon,
   CheckCircleIcon,
   ConstructionIcon,
   ForumIcon,
   HardwareIcon,
   HomeIcon,
-  MegaphoneIcon,
   RecyclingIcon,
   StorefrontIcon,
   TrashIcon,
@@ -75,7 +75,7 @@ interface HomePageProps {
   onOpenDisturbanceModal?: () => void;
   onOpenMicroActionsModal?: () => void;
   onOpenStudentQuestsModal?: () => void;
-  onOpenCivicNudgeModal?: () => void;
+  onOpenEmergencyAlert?: () => void;
   featureFlags: FeatureFlags;
   onViewThread: (threadId: number) => void;
   onNavigateToChallengesTab: () => void;
@@ -87,19 +87,19 @@ const CommunityGoalCard: React.FC<{ progress: number; goal: number; animationDel
   animationDelay,
 }) => (
   <div
-    className="bg-white p-4 rounded-xl shadow-subtle text-center transform transition-transform duration-300 hover:-translate-y-1 animate-fadeInUp"
+    className="bg-white/85 backdrop-blur-xl p-4 rounded-2xl shadow-md hover:shadow-xl text-center transform transition-all duration-300 hover:-translate-y-1 animate-fadeInUp border border-white/50"
     style={{ animationDelay }}
   >
-    <div className="w-12 h-12 rounded-full flex items-center justify-center bg-brand-green/10 text-brand-green-dark mx-auto mb-3">
+    <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#007AFF]/10 text-[#007AFF] mx-auto mb-3 shadow-sm">
       <RecyclingIcon className="w-7 h-7" />
     </div>
-    <p className="text-sm text-brand-gray-dark font-medium">Recycling Goal</p>
-    <p className="text-2xl font-bold text-brand-gray-dark mt-1">
+    <p className="text-sm text-[#1C1C1E] font-semibold">Recycling Goal</p>
+    <p className="text-2xl font-bold text-[#1C1C1E] mt-1">
       {((progress / goal) * 100).toFixed(0)}%
     </p>
-    <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+    <div className="w-full bg-gray-200/50 rounded-full h-2.5 mt-2">
       <div
-        className="bg-brand-green h-2.5 rounded-full"
+        className="bg-gradient-to-r from-[#007AFF] to-[#4A90E2] h-2.5 rounded-full shadow-sm"
         style={{ width: `${(progress / goal) * 100}%` }}
       ></div>
     </div>
@@ -114,14 +114,14 @@ const StickyActionHeader: React.FC<{
   onOpenDisturbanceModal?: () => void;
   onOpenMicroActionsModal?: () => void;
   onOpenStudentQuestsModal?: () => void;
-  onOpenCivicNudgeModal?: () => void;
+  onOpenEmergencyAlert?: () => void;
   featureFlags: FeatureFlags;
 }> = ({
   onOpenReportModal,
   onOpenDisturbanceModal,
   onOpenMicroActionsModal,
   onOpenStudentQuestsModal,
-  onOpenCivicNudgeModal,
+  onOpenEmergencyAlert,
   featureFlags,
 }) => {
   const buttonStyle =
@@ -131,31 +131,31 @@ const StickyActionHeader: React.FC<{
     <div className="fixed top-16 left-0 right-0 bg-white/95 backdrop-blur-lg shadow-md z-40 animate-fadeInDown">
       <div className="container mx-auto px-4 py-2 flex justify-around items-center overflow-x-auto">
         {featureFlags.microActions && (
-          <button onClick={onOpenMicroActionsModal} className={`${buttonStyle} text-brand-blue`}>
+          <button onClick={onOpenMicroActionsModal} className={`${buttonStyle} text-[#007AFF]`}>
             <AddTaskIcon className="w-6 h-6" />
             <span>Quick Action</span>
           </button>
         )}
-        <button onClick={onOpenReportModal} className={`${buttonStyle} text-brand-green`}>
+        <button onClick={onOpenReportModal} className={`${buttonStyle} text-[#34C759]`}>
           <TrashIcon className="w-6 h-6" />
           <span>Report Issue</span>
         </button>
         {featureFlags.disturbances && (
-          <button onClick={onOpenDisturbanceModal} className={`${buttonStyle} text-amber-500`}>
+          <button onClick={onOpenDisturbanceModal} className={`${buttonStyle} text-[#FF9528]`}>
             <WarningIcon className="w-6 h-6" />
             <span>Disturbance</span>
           </button>
         )}
         {onOpenStudentQuestsModal && (
-          <button onClick={onOpenStudentQuestsModal} className={`${buttonStyle} text-purple-600`}>
+          <button onClick={onOpenStudentQuestsModal} className={`${buttonStyle} text-[#AF52DE]`}>
             <BroomIcon className="w-6 h-6" />
             <span>Quests</span>
           </button>
         )}
-        {onOpenCivicNudgeModal && (
-          <button onClick={onOpenCivicNudgeModal} className={`${buttonStyle} text-orange-600`}>
-            <MegaphoneIcon className="w-6 h-6" />
-            <span>Nudge</span>
+        {onOpenEmergencyAlert && (
+          <button onClick={onOpenEmergencyAlert} className={`${buttonStyle} text-[#FF3B30]`}>
+            <AlertIcon className="w-6 h-6" />
+            <span>Alert</span>
           </button>
         )}
       </div>
@@ -165,27 +165,83 @@ const StickyActionHeader: React.FC<{
 
 const ChallengeBanner: React.FC<{
   challenge: Challenge;
-  onNavigateToLeaderboard: () => void;
-}> = ({ challenge, onNavigateToLeaderboard }) => {
+  onNavigateToChallengesTab: () => void;
+}> = ({ challenge, onNavigateToChallengesTab }) => {
+  const [joinStatus, setJoinStatus] = useState<'not-joined' | 'pending' | 'joined'>(() => {
+    const stored = localStorage.getItem(`challenge_${challenge.id}_status`);
+    return (stored as 'not-joined' | 'pending' | 'joined') || 'not-joined';
+  });
+
+  const handleJoinChallenge = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (joinStatus === 'not-joined') {
+      setJoinStatus('pending');
+      localStorage.setItem(`challenge_${challenge.id}_status`, 'pending');
+
+      // Store pending challenge request for admin approval
+      const pendingRequests = JSON.parse(
+        localStorage.getItem('pending_challenge_requests') || '[]'
+      );
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      pendingRequests.push({
+        challengeId: challenge.id,
+        userId: currentUser.id,
+        userName: currentUser.name,
+        requestedAt: new Date().toISOString(),
+      });
+      localStorage.setItem('pending_challenge_requests', JSON.stringify(pendingRequests));
+    }
+  };
+
+  const getButtonStyle = () => {
+    switch (joinStatus) {
+      case 'joined':
+        return 'bg-[#34C759] hover:bg-[#34C759]/90 text-white';
+      case 'pending':
+        return 'bg-[#FF9528] hover:bg-[#FF9528]/90 text-white';
+      default:
+        return 'bg-[#007AFF] hover:bg-[#007AFF]/90 text-white';
+    }
+  };
+
+  const getButtonText = () => {
+    switch (joinStatus) {
+      case 'joined':
+        return 'Joined ✓';
+      case 'pending':
+        return 'Pending Approval';
+      default:
+        return 'Join Challenge';
+    }
+  };
+
   return (
-    <button
-      onClick={onNavigateToLeaderboard}
-      className="w-full bg-gradient-to-r from-yellow-300 to-orange-400 text-yellow-900 p-4 rounded-lg shadow-lg mb-6 flex items-center space-x-4 hover:shadow-xl hover:scale-[1.02] transition-all cursor-pointer"
-    >
-      <MegaphoneIcon className="w-8 h-8 flex-shrink-0" />
-      <div className="text-left">
-        <h3 className="font-bold text-lg">{challenge.title}</h3>
-        <p className="text-sm">{challenge.description}</p>
+    <div className="w-full bg-gradient-to-r from-[#AF52DE]/10 via-[#AF52DE]/15 to-[#AF52DE]/20 backdrop-blur-xl border border-white/30 text-[#1C1C1E] p-5 rounded-2xl shadow-soft mb-6 hover:shadow-xl transition-all animate-shine">
+      <div className="flex items-center space-x-4">
+        <div className="w-12 h-12 bg-gradient-to-br from-[#AF52DE] to-[#FF3B30] rounded-full flex items-center justify-center shadow-md flex-shrink-0">
+          <AlertIcon className="w-6 h-6 text-white" />
+        </div>
+        <div className="text-left flex-1 cursor-pointer" onClick={onNavigateToChallengesTab}>
+          <h3 className="font-bold text-lg text-[#1C1C1E]">{challenge.title}</h3>
+          <p className="text-sm text-gray-600">{challenge.description}</p>
+        </div>
+        <button
+          onClick={handleJoinChallenge}
+          disabled={joinStatus !== 'not-joined'}
+          className={`px-4 py-2 rounded-full font-semibold text-sm transition-all transform hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100 ${getButtonStyle()} shadow-md`}
+        >
+          {getButtonText()}
+        </button>
       </div>
-    </button>
+    </div>
   );
 };
 
 const MayorChallengeCards: React.FC<{
   currentUserWardId: number | null;
   userPoints: number;
-  onNavigateToLeaderboard: () => void;
-}> = ({ currentUserWardId, userPoints, onNavigateToLeaderboard }) => {
+  onNavigateToChallengesTab: () => void;
+}> = ({ currentUserWardId, userPoints, onNavigateToChallengesTab }) => {
   const { challenges, loading } = useChallenges({
     is_active: true,
     ward_id: currentUserWardId || undefined,
@@ -204,11 +260,126 @@ const MayorChallengeCards: React.FC<{
     });
   };
 
+  const ChallengeCard: React.FC<{ challenge: Challenge }> = ({ challenge }) => {
+    const [joinStatus, setJoinStatus] = useState<'not-joined' | 'pending' | 'joined'>(() => {
+      const stored = localStorage.getItem(`challenge_${challenge.id}_status`);
+      return (stored as 'not-joined' | 'pending' | 'joined') || 'not-joined';
+    });
+
+    const handleJoinChallenge = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (joinStatus === 'not-joined') {
+        setJoinStatus('pending');
+        localStorage.setItem(`challenge_${challenge.id}_status`, 'pending');
+
+        // Store pending challenge request for admin approval
+        const pendingRequests = JSON.parse(
+          localStorage.getItem('pending_challenge_requests') || '[]'
+        );
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        pendingRequests.push({
+          challengeId: challenge.id,
+          userId: currentUser.id,
+          userName: currentUser.name,
+          requestedAt: new Date().toISOString(),
+        });
+        localStorage.setItem('pending_challenge_requests', JSON.stringify(pendingRequests));
+      }
+    };
+
+    const getButtonStyle = () => {
+      switch (joinStatus) {
+        case 'joined':
+          return 'bg-[#34C759] hover:bg-[#34C759]/90 text-white';
+        case 'pending':
+          return 'bg-[#FF9528] hover:bg-[#FF9528]/90 text-white';
+        default:
+          return 'bg-[#007AFF] hover:bg-[#007AFF]/90 text-white';
+      }
+    };
+
+    const getButtonText = () => {
+      switch (joinStatus) {
+        case 'joined':
+          return '✓';
+        case 'pending':
+          return '⏳';
+        default:
+          return 'Join';
+      }
+    };
+
+    const safeUserPoints = userPoints || 0;
+    const safeTargetPoints = challenge.target_points || 1;
+    const progress = Math.min((safeUserPoints / safeTargetPoints) * 100, 100);
+    const daysLeft = Math.ceil(
+      (new Date(challenge.end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+    );
+
+    return (
+      <div
+        key={challenge.id}
+        className="bg-gradient-to-br from-[#AF52DE]/10 via-[#AF52DE]/15 to-[#AF52DE]/20 backdrop-blur-xl border border-white/30 rounded-2xl shadow-soft p-6 transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300 hover:border-[#AF52DE]/40"
+      >
+        <div className="flex items-start justify-between mb-3">
+          <h3
+            onClick={onNavigateToChallengesTab}
+            className="font-bold text-lg text-brand-gray-dark flex-1 cursor-pointer hover:text-[#AF52DE] transition-colors"
+          >
+            {challenge.title}
+          </h3>
+          <div className="flex items-center gap-2 ml-2">
+            {challenge.ward_name && (
+              <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full whitespace-nowrap">
+                {challenge.ward_name}
+              </span>
+            )}
+            <button
+              onClick={handleJoinChallenge}
+              disabled={joinStatus !== 'not-joined'}
+              className={`px-3 py-1 rounded-full font-semibold text-xs transition-all transform hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100 ${getButtonStyle()} shadow-md`}
+            >
+              {getButtonText()}
+            </button>
+          </div>
+        </div>
+        <p
+          onClick={onNavigateToChallengesTab}
+          className="text-gray-600 text-sm mb-4 line-clamp-2 cursor-pointer"
+        >
+          {challenge.description}
+        </p>
+
+        <div className="mb-3">
+          <div className="flex justify-between text-sm mb-1">
+            <span className="text-gray-600">Your Progress</span>
+            <span className="font-semibold text-purple-600">
+              {safeUserPoints.toLocaleString()} / {safeTargetPoints.toLocaleString()} Karma
+            </span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+            <div
+              className="bg-gradient-to-r from-purple-500 to-purple-600 h-2 rounded-full transition-all duration-500"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between text-xs text-gray-500">
+          <span>Ends {formatDate(challenge.end_date)}</span>
+          <span className={`font-semibold ${daysLeft <= 3 ? 'text-red-600' : 'text-gray-700'}`}>
+            {daysLeft} days left
+          </span>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="my-10 animate-fadeInUp" style={{ animationDelay: '0.6s' }}>
       <div className="flex items-center justify-between mb-4">
         <button
-          onClick={onNavigateToLeaderboard}
+          onClick={onNavigateToChallengesTab}
           className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer"
         >
           <div className="w-10 h-10 flex items-center justify-center bg-purple-500/10 text-purple-600 rounded-xl">
@@ -220,63 +391,16 @@ const MayorChallengeCards: React.FC<{
           </div>
         </button>
         <button
-          onClick={onNavigateToLeaderboard}
+          onClick={onNavigateToChallengesTab}
           className="text-purple-600 hover:text-purple-700 font-semibold text-sm hover:underline flex-shrink-0"
         >
           View All
         </button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {challenges.map(challenge => {
-          const safeUserPoints = userPoints || 0;
-          const safeTargetPoints = challenge.target_points || 1;
-          const progress = Math.min((safeUserPoints / safeTargetPoints) * 100, 100);
-          const daysLeft = Math.ceil(
-            (new Date(challenge.end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-          );
-
-          return (
-            <div
-              key={challenge.id}
-              onClick={onNavigateToLeaderboard}
-              className="bg-white rounded-xl shadow-subtle p-6 cursor-pointer transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300 border-2 border-transparent hover:border-purple-300"
-            >
-              <div className="flex items-start justify-between mb-3">
-                <h3 className="font-bold text-lg text-brand-gray-dark flex-1">{challenge.title}</h3>
-                {challenge.ward_name && (
-                  <span className="ml-2 text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full whitespace-nowrap">
-                    {challenge.ward_name}
-                  </span>
-                )}
-              </div>
-              <p className="text-gray-600 text-sm mb-4 line-clamp-2">{challenge.description}</p>
-
-              <div className="mb-3">
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-600">Your Progress</span>
-                  <span className="font-semibold text-purple-600">
-                    {safeUserPoints.toLocaleString()} / {safeTargetPoints.toLocaleString()} Karma
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                  <div
-                    className="bg-gradient-to-r from-purple-500 to-purple-600 h-2 rounded-full transition-all duration-500"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between text-xs text-gray-500">
-                <span>Ends {formatDate(challenge.end_date)}</span>
-                <span
-                  className={`font-semibold ${daysLeft <= 3 ? 'text-red-600' : 'text-gray-700'}`}
-                >
-                  {daysLeft} days left
-                </span>
-              </div>
-            </div>
-          );
-        })}
+        {challenges.map(challenge => (
+          <ChallengeCard key={challenge.id} challenge={challenge} />
+        ))}
       </div>
     </div>
   );
@@ -329,7 +453,7 @@ const IssueCard: React.FC<{
   return (
     <div
       onClick={onSelect}
-      className={`bg-white rounded-lg shadow-subtle overflow-hidden transform hover:-translate-y-1 transition-transform duration-300 cursor-pointer border ${isChallengeIssue ? 'border-brand-green shadow-lg' : 'border-gray-100'}`}
+      className={`bg-white/85 backdrop-blur-xl rounded-2xl shadow-md hover:shadow-xl overflow-hidden transform hover:-translate-y-1 transition-all duration-300 cursor-pointer border border-white/50 ${isChallengeIssue ? 'ring-2 ring-[#007AFF] shadow-blue-200' : ''}`}
     >
       {issue.image_url && (
         <img
@@ -342,10 +466,12 @@ const IssueCard: React.FC<{
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
           <div>
-            <h3 className="font-bold text-md leading-tight text-brand-gray-dark">{issue.title}</h3>
+            <h3 className="font-semibold text-sm leading-tight text-[#1C1C1E]">{issue.title}</h3>
             <p className="text-xs text-gray-500">{issue.ward_name || `Ward ${issue.ward_id}`}</p>
           </div>
-          <span className={`px-2 py-1 text-xs rounded-full font-semibold ${getStatusColor()}`}>
+          <span
+            className={`px-2 py-1 text-xs rounded-lg font-semibold shadow-sm ${getStatusColor()}`}
+          >
             {getStatusLabel()}
           </span>
         </div>
@@ -354,13 +480,13 @@ const IssueCard: React.FC<{
 
         {issue.status === 'in_progress' && (
           <div className="mt-3">
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="w-full bg-gray-200/50 rounded-full h-2">
               <div
-                className="bg-brand-blue h-2 rounded-full"
+                className="bg-gradient-to-r from-[#007AFF] to-[#4A90E2] h-2 rounded-full shadow-sm"
                 style={{ width: `${Math.min(100, volunteersJoined * 25)}%` }}
               ></div>
             </div>
-            <p className="text-xs text-center mt-1.5 text-gray-600">
+            <p className="text-xs text-center mt-1.5 text-gray-600 font-medium">
               {volunteersJoined} volunteer{volunteersJoined !== 1 ? 's' : ''} joined
             </p>
           </div>
@@ -551,7 +677,7 @@ const TopHeroesCarousel: React.FC<{ users: UserRank[] }> = ({ users }) => {
                     className={`flex items-center justify-center font-bold mt-1 ${styles.points}`}
                   >
                     <TrophyIcon className="w-5 h-5 mr-1" />
-                    <span>{user.points.toLocaleString()} SP</span>
+                    <span>{user.points.toLocaleString()} KP</span>
                   </div>
                 </div>
               </div>
@@ -600,7 +726,7 @@ const FeaturedRewardsCarousel: React.FC<{ rewards: Reward[]; onNavigate: () => v
             <div className="p-3">
               <h4 className="font-bold text-sm truncate">{reward.title}</h4>
               <p className="text-xs text-gray-500">{reward.partner}</p>
-              <p className="font-bold text-brand-green mt-1">{reward.cost.toLocaleString()} SP</p>
+              <p className="font-bold text-brand-green mt-1">{reward.cost.toLocaleString()} KP</p>
             </div>
           </div>
         ))}
@@ -678,7 +804,7 @@ const HomePage: React.FC<HomePageProps> = ({
   onOpenDisturbanceModal,
   onOpenMicroActionsModal,
   onOpenStudentQuestsModal,
-  onOpenCivicNudgeModal,
+  onOpenEmergencyAlert,
   featureFlags,
   onViewThread,
   onNavigateToChallengesTab,
@@ -825,7 +951,7 @@ const HomePage: React.FC<HomePageProps> = ({
           onOpenDisturbanceModal={onOpenDisturbanceModal}
           onOpenMicroActionsModal={onOpenMicroActionsModal}
           onOpenStudentQuestsModal={onOpenStudentQuestsModal}
-          onOpenCivicNudgeModal={onOpenCivicNudgeModal}
+          onOpenEmergencyAlert={onOpenEmergencyAlert}
           featureFlags={featureFlags}
         />
       )}
@@ -841,7 +967,7 @@ const HomePage: React.FC<HomePageProps> = ({
       {activeChallenge && (
         <ChallengeBanner
           challenge={activeChallenge}
-          onNavigateToLeaderboard={onNavigateToChallengesTab}
+          onNavigateToChallengesTab={onNavigateToChallengesTab}
         />
       )}
 
@@ -899,7 +1025,7 @@ const HomePage: React.FC<HomePageProps> = ({
           />
           <StatCard
             icon={<TrophyIcon className="w-7 h-7" />}
-            label="Total Community SP"
+            label="Total Community KP"
             value={communityStats.totalPoints.toLocaleString()}
             animationDelay="0.4s"
           />
@@ -915,7 +1041,7 @@ const HomePage: React.FC<HomePageProps> = ({
           <MayorChallengeCards
             currentUserWardId={parseInt(currentUser.ward.match(/\d+/)?.[0] || '0')}
             userPoints={currentUser.points || 0}
-            onNavigateToLeaderboard={onNavigateToChallengesTab}
+            onNavigateToChallengesTab={onNavigateToChallengesTab}
           />
         )}
 

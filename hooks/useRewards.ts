@@ -69,8 +69,31 @@ export const useRewards = (filters?: RewardFilters) => {
       setTotalCount(response.total);
       setCurrentPage(response.page);
       return response;
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to fetch rewards');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch rewards';
+
+      // If API fails, try to load from localStorage
+      try {
+        const storedRewards = localStorage.getItem('safaNepal-rewards');
+        if (storedRewards) {
+          const localRewards = JSON.parse(storedRewards);
+          const params = { ...filters, ...customFilters };
+          // Apply filters if specified
+          let filteredRewards = localRewards;
+          if (params.category) {
+            filteredRewards = localRewards.filter(
+              (r: Reward) => r.category?.toLowerCase() === params.category?.toLowerCase()
+            );
+          }
+          setRewards(filteredRewards);
+          setTotalCount(filteredRewards.length);
+          setCurrentPage(1);
+          return { rewards: filteredRewards, total: filteredRewards.length, page: 1 };
+        }
+      } catch (localErr) {
+        console.error('Failed to load from localStorage:', localErr);
+      }
+      setError(errorMessage);
       return { rewards: [], total: 0, page: 1 };
     } finally {
       setLoading(false);

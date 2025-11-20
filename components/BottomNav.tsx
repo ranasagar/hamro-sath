@@ -14,17 +14,24 @@ const NavItem = React.memo<{
   isActive: boolean;
   onClick: () => void;
 }>(({ label, icon, isActive, onClick }) => {
-  const activeClass = isActive ? 'text-brand-green' : 'text-brand-gray';
+  const activeClass = isActive ? 'text-[#007AFF]' : 'text-gray-500';
   return (
     <button
       onClick={onClick}
-      className={`relative flex flex-col items-center justify-center w-full transition-colors duration-200 ${activeClass} hover:text-brand-green-light`}
+      className={`relative flex flex-col items-center justify-center w-full transition-all duration-200 ${activeClass} hover:text-[#4A90E2]`}
       aria-label={`Navigate to ${label}`}
       aria-current={isActive ? 'page' : undefined}
     >
-      {isActive && <div className="absolute top-1 w-1.5 h-1.5 bg-brand-green rounded-full" aria-hidden="true"></div>}
-      <span aria-hidden="true">{icon}</span>
-      <span className="text-xs font-medium mt-0.5">{label}</span>
+      {isActive && (
+        <div
+          className="absolute -top-0.5 w-8 h-1 bg-[#007AFF] rounded-full"
+          aria-hidden="true"
+        ></div>
+      )}
+      <span aria-hidden="true" className={isActive ? 'scale-110' : ''}>
+        {icon}
+      </span>
+      <span className="text-xs font-semibold mt-0.5">{label}</span>
     </button>
   );
 });
@@ -44,7 +51,10 @@ const BottomNav: React.FC<BottomNavProps> = ({ currentPage, setCurrentPage, feat
   );
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-[0_-2px_10px_rgba(0,0,0,0.05)] border-t border-gray-100 z-50" aria-label="Main navigation">
+    <nav
+      className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl shadow-soft border-t border-white/20 z-50"
+      aria-label="Main navigation"
+    >
       <div className="container mx-auto flex justify-around items-center h-16" role="tablist">
         {visibleNavItems.map(item => (
           <NavItem

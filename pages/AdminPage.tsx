@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createChallenge, deleteChallenge, updateChallenge } from '../hooks/useChallenges';
 import { api } from '../services/api';
 import {
@@ -18,6 +18,7 @@ import {
   Ward,
 } from '../types';
 // FIX: Added missing icon imports
+import BlockchainTransactions from '../components/BlockchainTransactions';
 import HeroSlideModal from '../components/HeroSlideModal';
 import {
   AdminPanelIcon,
@@ -25,6 +26,7 @@ import {
   DeleteIcon,
   EditIcon,
   TrashIcon,
+  TrophyIcon,
   UsersIcon,
   WarningIcon,
 } from '../components/Icons';
@@ -181,7 +183,7 @@ const UsersTab: React.FC<{
               )}
             </p>
             <p className="text-sm text-gray-500">
-              {user.points.toLocaleString()} SP &bull; {user.ward}
+              {user.points.toLocaleString()} KP &bull; {user.ward}
             </p>
           </div>
           <div className="flex gap-2">
@@ -370,7 +372,7 @@ const MarketplaceTab: React.FC<{
               <div className="flex-grow">
                 <p className="font-semibold">{reward.title}</p>
                 <p className="text-sm text-gray-500">
-                  {reward.partner} &bull; {reward.cost.toLocaleString()} SP &bull;{' '}
+                  {reward.partner} &bull; {reward.cost.toLocaleString()} KP &bull;{' '}
                   <span className={`font-bold ${tierColorMap[reward.listingTier]}`}>
                     {reward.listingTier} Tier
                   </span>
@@ -924,7 +926,7 @@ const ChallengesTab: React.FC = () => {
                 </div>
                 <div>
                   <span className="font-semibold">Target:</span>{' '}
-                  {challenge.target_points.toLocaleString()} SP
+                  {challenge.target_points?.toLocaleString() || 0} KP
                 </div>
                 <div>
                   <span className="font-semibold">Start:</span>{' '}
@@ -1064,50 +1066,146 @@ const ApprovalsTab: React.FC<{
 }> = ({ redemptions, onApprove, onReject }) => {
   const pendingRedemptions = redemptions.filter(r => r.status === 'pending');
 
+  // Challenge join requests state
+  const [pendingChallengeRequests, setPendingChallengeRequests] = useState<any[]>([]);
+
+  useEffect(() => {
+    const loadChallengeRequests = () => {
+      const requests = JSON.parse(localStorage.getItem('pending_challenge_requests') || '[]');
+      setPendingChallengeRequests(requests);
+    };
+    loadChallengeRequests();
+
+    // Listen for storage changes
+    const handleStorageChange = () => loadChallengeRequests();
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  const handleApproveChallenge = (index: number, userId: number, challengeId: number) => {
+    // Update user's challenge status to 'joined'
+    localStorage.setItem(`challenge_${challengeId}_status`, 'joined');
+
+    // Remove from pending requests
+    const updated = pendingChallengeRequests.filter((_, i) => i !== index);
+    localStorage.setItem('pending_challenge_requests', JSON.stringify(updated));
+    setPendingChallengeRequests(updated);
+  };
+
+  const handleRejectChallenge = (index: number, challengeId: number) => {
+    // Reset challenge status to 'not-joined'
+    localStorage.setItem(`challenge_${challengeId}_status`, 'not-joined');
+
+    // Remove from pending requests
+    const updated = pendingChallengeRequests.filter((_, i) => i !== index);
+    localStorage.setItem('pending_challenge_requests', JSON.stringify(updated));
+    setPendingChallengeRequests(updated);
+  };
+
   return (
-    <div className="bg-white p-4 rounded-lg shadow-sm">
-      <h3 className="font-bold text-lg mb-4">Safety Kit Purchase Redemptions</h3>
-      {pendingRedemptions.length > 0 ? (
-        <div className="space-y-3">
-          {pendingRedemptions.map(r => (
-            <div key={r.id} className="flex items-center p-3 border rounded-md gap-4">
-              <img src={r.userAvatar} alt={r.userName} className="w-10 h-10 rounded-full" />
-              <a
-                href={r.receiptImageUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-shrink-0"
+    <div className="space-y-6">
+      {/* Challenge Join Requests */}
+      <div className="bg-white/85 backdrop-blur-xl p-6 rounded-2xl shadow-soft border border-white/50">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-gradient-to-br from-[#AF52DE] to-[#FF3B30] rounded-xl flex items-center justify-center shadow-md">
+            <TrophyIcon className="w-5 h-5 text-white" />
+          </div>
+          <h3 className="font-bold text-xl text-[#1C1C1E]">Challenge Join Requests</h3>
+        </div>
+        {pendingChallengeRequests.length > 0 ? (
+          <div className="space-y-3">
+            {pendingChallengeRequests.map((request, index) => (
+              <div
+                key={index}
+                className="flex items-center p-4 bg-gradient-to-br from-[#AF52DE]/5 to-[#AF52DE]/10 rounded-xl border border-[#AF52DE]/20 gap-4 hover:shadow-md transition-all"
+              >
+                <div className="flex-grow">
+                  <p className="font-semibold text-[#1C1C1E]">{request.userName}</p>
+                  <p className="text-sm text-gray-600">Challenge ID: {request.challengeId}</p>
+                  <p className="text-xs text-gray-500">
+                    Requested: {new Date(request.requestedAt).toLocaleString()}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() =>
+                      handleApproveChallenge(index, request.userId, request.challengeId)
+                    }
+                    className="px-4 py-2 bg-[#34C759] text-white rounded-full text-sm font-semibold hover:bg-[#34C759]/90 transition-all shadow-md hover:shadow-lg"
+                  >
+                    Approve
+                  </button>
+                  <button
+                    onClick={() => handleRejectChallenge(index, request.challengeId)}
+                    className="px-4 py-2 bg-[#FF3B30] text-white rounded-full text-sm font-semibold hover:bg-[#FF3B30]/90 transition-all shadow-md hover:shadow-lg"
+                  >
+                    Reject
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8">
+            <p className="text-gray-500">No pending challenge join requests.</p>
+          </div>
+        )}
+      </div>
+
+      {/* Safety Kit Redemptions */}
+      <div className="bg-white/85 backdrop-blur-xl p-6 rounded-2xl shadow-soft border border-white/50">
+        <h3 className="font-bold text-xl text-[#1C1C1E] mb-4">Safety Kit Purchase Redemptions</h3>
+        {pendingRedemptions.length > 0 ? (
+          <div className="space-y-3">
+            {pendingRedemptions.map(r => (
+              <div
+                key={r.id}
+                className="flex items-center p-4 bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-xl border border-blue-200/50 gap-4 hover:shadow-md transition-all"
               >
                 <img
-                  src={r.receiptImageUrl}
-                  alt="Receipt"
-                  className="w-20 h-12 object-cover rounded-md"
+                  src={r.userAvatar}
+                  alt={r.userName}
+                  className="w-12 h-12 rounded-full shadow-md"
                 />
-              </a>
-              <div className="flex-grow">
-                <p className="font-semibold">{r.userName}</p>
-                <p className="text-xs text-gray-500">{new Date(r.timestamp).toLocaleString()}</p>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => onApprove(r.id)}
-                  className="px-3 py-1 bg-green-500 text-white rounded-md text-sm font-semibold hover:bg-green-600"
+                <a
+                  href={r.receiptImageUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-shrink-0"
                 >
-                  Approve
-                </button>
-                <button
-                  onClick={() => onReject(r.id)}
-                  className="px-3 py-1 bg-red-500 text-white rounded-md text-sm font-semibold hover:bg-red-600"
-                >
-                  Reject
-                </button>
+                  <img
+                    src={r.receiptImageUrl}
+                    alt="Receipt"
+                    className="w-20 h-12 object-cover rounded-lg shadow-sm"
+                  />
+                </a>
+                <div className="flex-grow">
+                  <p className="font-semibold text-[#1C1C1E]">{r.userName}</p>
+                  <p className="text-xs text-gray-500">{new Date(r.timestamp).toLocaleString()}</p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => onApprove(r.id)}
+                    className="px-4 py-2 bg-[#34C759] text-white rounded-full text-sm font-semibold hover:bg-[#34C759]/90 transition-all shadow-md hover:shadow-lg"
+                  >
+                    Approve
+                  </button>
+                  <button
+                    onClick={() => onReject(r.id)}
+                    className="px-4 py-2 bg-[#FF3B30] text-white rounded-full text-sm font-semibold hover:bg-[#FF3B30]/90 transition-all shadow-md hover:shadow-lg"
+                  >
+                    Reject
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p className="text-gray-500 text-center py-4">No pending redemptions.</p>
-      )}
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8">
+            <p className="text-gray-500">No pending redemptions.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -1132,7 +1230,7 @@ const TransactionsTab: React.FC<{
           <div className="text-right">
             {p.pointsUsed > 0 && (
               <p className="text-sm font-semibold text-red-500">
-                -{p.pointsUsed.toLocaleString()} SP
+                -{p.pointsUsed.toLocaleString()} KP
               </p>
             )}
             {p.amountPaidNPR > 0 && (
@@ -1291,13 +1389,7 @@ const AdminPage: React.FC<AdminPageProps> = props => {
           />
         );
       case 'transactions':
-        return (
-          <TransactionsTab
-            purchases={props.allPurchases}
-            onConfirm={props.onConfirmPurchase}
-            onViewReceipt={setViewingReceipt}
-          />
-        );
+        return <BlockchainTransactions purchases={props.allPurchases} />;
       case 'issues':
         return <IssuesTab issues={props.issues} onDelete={props.onDeleteIssue} />;
       case 'disturbances':

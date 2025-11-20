@@ -44,7 +44,7 @@ const SupplyLogModal: React.FC<SupplyLogModalProps> = ({ onClose, onSubmit }) =>
         <form onSubmit={handleSubmit}>
           <div className="p-6 space-y-4">
             <p className="text-sm text-gray-600">
-              Confirm where you picked up your Clean-Up Kit to earn 25 SP for your effort.
+              Confirm where you picked up your Clean-Up Kit to earn 25 KP for your effort.
             </p>
 
             <div>
@@ -81,7 +81,7 @@ const SupplyLogModal: React.FC<SupplyLogModalProps> = ({ onClose, onSubmit }) =>
               disabled={isSubmitting}
               className="px-4 py-2 bg-brand-green text-white rounded-md hover:bg-brand-green-dark disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? 'Logging...' : 'Log & Earn 25 SP'}
+              {isSubmitting ? 'Logging...' : 'Log & Earn 25 KP'}
             </button>
           </div>
         </form>

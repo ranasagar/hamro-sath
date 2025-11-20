@@ -67,14 +67,14 @@ const ReceiptModal: React.FC<ReceiptModalProps> = ({ receipt, onClose }) => {
                 <tr>
                   <td className="py-1 text-gray-600">Total Cost:</td>
                   <td className="py-1 text-right font-mono font-semibold">
-                    {receipt.costInSP.toLocaleString()} SP
+                    {receipt.costInSP.toLocaleString()} KP
                   </td>
                 </tr>
                 {receipt.pointsUsed > 0 && (
                   <tr>
                     <td className="py-1 text-gray-600">Points Used:</td>
                     <td className="py-1 text-right font-mono font-semibold text-red-600">
-                      -{receipt.pointsUsed.toLocaleString()} SP
+                      -{receipt.pointsUsed.toLocaleString()} KP
                     </td>
                   </tr>
                 )}

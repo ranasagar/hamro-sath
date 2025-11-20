@@ -11,40 +11,38 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ points, currentUser, setCurrentPage }) => {
   return (
     <header
-      className="bg-white/90 backdrop-blur-lg shadow-md fixed top-0 left-0 right-0 z-50"
+      className="bg-white/70 backdrop-blur-xl shadow-soft fixed top-0 left-0 right-0 z-50 border-b border-white/20"
       role="banner"
     >
       <div className="container mx-auto px-4 h-16 flex justify-between items-center">
-        <h1 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-green to-brand-blue-dark">
-          Hamro Saath, Safa Nepal
-        </h1>
-        <div className="flex items-center space-x-4">
+        <h1 className="text-lg font-bold text-[#1C1C1E]">Hamro Saath 🇳🇵</h1>
+        <div className="flex items-center gap-3">
           {currentUser && (
             <>
               <div
-                className="flex items-center space-x-2 bg-gradient-to-r from-brand-green/80 to-brand-blue/80 text-white font-bold py-1.5 px-4 rounded-full shadow-sm"
+                className="flex items-center gap-2 bg-[#007AFF] text-white font-bold py-2 px-4 rounded-full shadow-lg shadow-blue-200"
                 aria-label={`Your Karma Points: ${points.toLocaleString()}`}
               >
                 <span aria-hidden="true">⚡</span>
                 <span className="font-mono">{points.toLocaleString()}</span>
-                <span className="text-xs opacity-90">Karma</span>
+                <span className="text-xs opacity-90">KP</span>
               </div>
               <nav aria-label="User navigation">
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center gap-2">
                   <button
                     onClick={() => setCurrentPage('profile')}
-                    className="text-brand-gray-dark hover:text-brand-green transition-colors"
+                    className="p-2 rounded-full bg-white shadow-md hover:shadow-lg transition-all hover:scale-105"
                     aria-label="Go to Profile"
                   >
-                    <UserCircleIcon />
+                    <UserCircleIcon className="text-[#4A90E2]" />
                   </button>
                   {currentUser.isAdmin && (
                     <button
                       onClick={() => setCurrentPage('admin')}
-                      className="text-brand-gray-dark hover:text-brand-blue transition-colors"
+                      className="p-2 rounded-full bg-white shadow-md hover:shadow-lg transition-all hover:scale-105"
                       aria-label="Go to Admin Panel"
                     >
-                      <AdminPanelIcon />
+                      <AdminPanelIcon className="text-[#FF3B30]" />
                     </button>
                   )}
                 </div>

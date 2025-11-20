@@ -91,6 +91,50 @@ export interface Activity {
   isAnnouncement?: boolean;
 }
 
+export type BlockchainNetwork = 'Ethereum' | 'Polygon' | 'Binance Smart Chain' | 'Solana';
+
+export type PaymentMethod =
+  | 'karma_only'
+  | 'blockchain_only'
+  | 'cash_only'
+  | 'karma_blockchain'
+  | 'karma_cash'
+  | 'blockchain_cash'
+  | 'all_three';
+
+export interface BlockchainWallet {
+  address: string;
+  network: BlockchainNetwork;
+  balance: number;
+  currency: string;
+  isConnected: boolean;
+  lastSync?: number;
+}
+
+export interface BlockchainTransaction {
+  id: string;
+  transactionHash: string;
+  network: BlockchainNetwork;
+  from: string;
+  to: string;
+  amount: number;
+  currency: string;
+  gasUsed?: number;
+  gasFee?: number;
+  blockNumber?: number;
+  timestamp: number;
+  status: 'pending' | 'confirmed' | 'failed';
+}
+
+export interface MixedPaymentBreakdown {
+  karmaPoints: number;
+  blockchainAmount: number;
+  blockchainCurrency: string;
+  cashAmountNPR: number;
+  totalValueNPR: number;
+  blockchainTransaction?: BlockchainTransaction;
+}
+
 export interface PurchaseReceipt {
   id: number;
   userName: string;
@@ -103,6 +147,9 @@ export interface PurchaseReceipt {
   timestamp: number;
   qrCodeUrl: string;
   status: 'pending' | 'confirmed';
+  paymentMethod?: PaymentMethod;
+  paymentBreakdown?: MixedPaymentBreakdown;
+  walletAddress?: string;
 }
 
 export interface AdminPurchaseReceipt extends PurchaseReceipt {
@@ -120,6 +167,7 @@ export interface UserRank {
   purchaseHistory: PurchaseReceipt[];
   isAdmin?: boolean;
   notifications?: string[];
+  wallet?: BlockchainWallet;
 }
 
 export interface Ward {
@@ -133,6 +181,17 @@ export interface WardRank {
   points: number;
 }
 
+export interface RewardRating {
+  id: number;
+  reward_id: number;
+  user_id: number;
+  user_name: string;
+  user_avatar: string;
+  rating: number; // 1-5
+  review?: string;
+  created_at: string;
+}
+
 export interface Reward {
   id: number;
   title: string;
@@ -142,6 +201,13 @@ export interface Reward {
   rewardType?: 'digital_wallet';
   priceNPR?: number;
   listingTier: 'Gold' | 'Silver' | 'Bronze';
+  acceptsBlockchain?: boolean;
+  blockchainPriceUSD?: number;
+  allowsMixedPayment?: boolean;
+  minimumKarmaPoints?: number;
+  averageRating?: number;
+  totalRatings?: number;
+  ratings?: RewardRating[];
 }
 
 export interface MerchandiseReview {

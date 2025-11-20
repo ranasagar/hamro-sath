@@ -14,7 +14,9 @@ interface ProfilePageProps {}
 const ProfilePage: React.FC<ProfilePageProps> = () => {
   const { user: authUser } = useAuth();
   const { profile, activities, loading, error, fetchProfile, fetchActivities } = useUserProfile();
-  const [activeTab, setActiveTab] = useState<'stats' | 'activity' | 'badges'>('stats');
+  const [activeTab, setActiveTab] = useState<
+    'stats' | 'activity' | 'badges' | 'blockchain' | 'wallet'
+  >('stats');
   const [hasFetched, setHasFetched] = useState(false);
 
   useEffect(() => {
@@ -160,12 +162,12 @@ const ProfilePage: React.FC<ProfilePageProps> = () => {
       </div>
 
       {/* Tabs */}
-      <div className="mb-6 flex border-b border-gray-200">
-        {['stats', 'activity', 'badges'].map(tab => (
+      <div className="mb-6 flex border-b border-gray-200 overflow-x-auto">
+        {['stats', 'activity', 'badges', 'blockchain', 'wallet'].map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab as any)}
-            className={`capitalize px-6 py-3 font-semibold transition-colors ${
+            className={`capitalize px-4 sm:px-6 py-3 font-semibold transition-colors text-xs sm:text-base whitespace-nowrap ${
               activeTab === tab
                 ? 'border-b-2 border-brand-green text-brand-green'
                 : 'text-gray-500 hover:text-brand-green'
@@ -318,6 +320,437 @@ const ProfilePage: React.FC<ProfilePageProps> = () => {
               No badges earned yet. Keep participating to earn badges!
             </div>
           )}
+        </div>
+      )}
+
+      {/* Blockchain Tab */}
+      {activeTab === 'blockchain' && (
+        <div className="space-y-6 animate-slide-up">
+          {/* Hero Section */}
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-8 rounded-xl shadow-lg">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                <span className="text-4xl">🔗</span>
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold">Blockchain-Powered Payments</h2>
+                <p className="text-blue-100 text-sm">Secure, Transparent, and Decentralized</p>
+              </div>
+            </div>
+          </div>
+
+          {/* What is Blockchain? */}
+          <div className="bg-white p-6 rounded-lg shadow-subtle">
+            <h3 className="text-xl font-bold text-brand-gray-dark mb-4 flex items-center gap-2">
+              <span>💡</span> What is Blockchain?
+            </h3>
+            <p className="text-gray-700 leading-relaxed mb-4">
+              Blockchain is a revolutionary digital ledger technology that records transactions in a
+              secure, transparent, and tamper-proof way. Think of it as a digital notebook that
+              everyone can read, but no one can erase or change past entries.
+            </p>
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+              <p className="text-sm text-blue-900">
+                <strong>In simple terms:</strong> Every transaction you make is recorded in a
+                "block" and linked to previous blocks, creating a secure "chain" that cannot be
+                altered.
+              </p>
+            </div>
+          </div>
+
+          {/* Why Blockchain for Payments? */}
+          <div className="bg-white p-6 rounded-lg shadow-subtle">
+            <h3 className="text-xl font-bold text-brand-gray-dark mb-4 flex items-center gap-2">
+              <span>✨</span> Why Blockchain is the Best Payment Method
+            </h3>
+            <div className="space-y-4">
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">🔒</span>
+                </div>
+                <div>
+                  <h4 className="font-bold text-brand-gray-dark mb-1">Maximum Security</h4>
+                  <p className="text-sm text-gray-600">
+                    Your transactions are encrypted and distributed across thousands of computers,
+                    making them virtually impossible to hack or manipulate.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">👁️</span>
+                </div>
+                <div>
+                  <h4 className="font-bold text-brand-gray-dark mb-1">Complete Transparency</h4>
+                  <p className="text-sm text-gray-600">
+                    Every transaction is publicly recorded (while keeping your identity private),
+                    ensuring full accountability and preventing fraud.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">⚡</span>
+                </div>
+                <div>
+                  <h4 className="font-bold text-brand-gray-dark mb-1">Fast & Low-Cost</h4>
+                  <p className="text-sm text-gray-600">
+                    No banks or middlemen means faster transactions and lower fees. Send money
+                    anywhere in minutes, not days.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">🌍</span>
+                </div>
+                <div>
+                  <h4 className="font-bold text-brand-gray-dark mb-1">Borderless Transactions</h4>
+                  <p className="text-sm text-gray-600">
+                    Send and receive payments globally without currency conversion hassles or
+                    international banking fees.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">🎯</span>
+                </div>
+                <div>
+                  <h4 className="font-bold text-brand-gray-dark mb-1">Full Control</h4>
+                  <p className="text-sm text-gray-600">
+                    You own and control your money directly—no bank can freeze your account or deny
+                    your transactions.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* How to Use in App */}
+          <div className="bg-white p-6 rounded-lg shadow-subtle">
+            <h3 className="text-xl font-bold text-brand-gray-dark mb-4 flex items-center gap-2">
+              <span>📱</span> How to Use Blockchain Payments in This App
+            </h3>
+            <div className="space-y-4">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="bg-brand-green text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">
+                    1
+                  </span>
+                  <h4 className="font-bold text-brand-gray-dark">Earn Karma Points</h4>
+                </div>
+                <p className="text-sm text-gray-600 ml-11">
+                  Complete civic activities, report issues, recycle, and volunteer to earn Karma
+                  points. These are stored securely on the blockchain.
+                </p>
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="bg-brand-green text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">
+                    2
+                  </span>
+                  <h4 className="font-bold text-brand-gray-dark">Visit Rewards Marketplace</h4>
+                </div>
+                <p className="text-sm text-gray-600 ml-11">
+                  Browse available rewards, discounts, and services from our partner organizations.
+                  All transactions are blockchain-verified.
+                </p>
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="bg-brand-green text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">
+                    3
+                  </span>
+                  <h4 className="font-bold text-brand-gray-dark">Redeem with Blockchain</h4>
+                </div>
+                <p className="text-sm text-gray-600 ml-11">
+                  When you redeem a reward, your Karma points are deducted via a blockchain
+                  transaction— instant, secure, and permanently recorded.
+                </p>
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="bg-brand-green text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">
+                    4
+                  </span>
+                  <h4 className="font-bold text-brand-gray-dark">Track Everything</h4>
+                </div>
+                <p className="text-sm text-gray-600 ml-11">
+                  View your complete transaction history in your profile. Every Karma point earned
+                  and spent is permanently recorded on the blockchain.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Benefits Summary */}
+          <div className="bg-gradient-to-br from-green-50 to-blue-50 border-2 border-green-200 p-6 rounded-xl">
+            <h3 className="text-lg font-bold text-brand-gray-dark mb-3 flex items-center gap-2">
+              <span>🎉</span> Your Benefits with Blockchain
+            </h3>
+            <ul className="space-y-2 text-sm text-gray-700">
+              <li className="flex items-start gap-2">
+                <span className="text-green-600 font-bold">✓</span>
+                <span>Your Karma points are truly yours—stored in a decentralized system</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-green-600 font-bold">✓</span>
+                <span>Instant verification of your civic contributions and rewards</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-green-600 font-bold">✓</span>
+                <span>No hidden fees or transaction delays from traditional payment systems</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-green-600 font-bold">✓</span>
+                <span>Permanent proof of your positive impact on the community</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-green-600 font-bold">✓</span>
+                <span>Future-proof technology that grows with you</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* FAQ */}
+          <div className="bg-white p-6 rounded-lg shadow-subtle">
+            <h3 className="text-xl font-bold text-brand-gray-dark mb-4 flex items-center gap-2">
+              <span>❓</span> Common Questions
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-semibold text-brand-gray-dark mb-1">
+                  Do I need cryptocurrency?
+                </h4>
+                <p className="text-sm text-gray-600">
+                  No! You earn Karma points through civic activities. We handle all blockchain
+                  technology in the background—you just focus on making a difference.
+                </p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-brand-gray-dark mb-1">Is it safe?</h4>
+                <p className="text-sm text-gray-600">
+                  Absolutely! Blockchain is one of the most secure technologies available. Your
+                  transactions are encrypted and verified by the entire network.
+                </p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-brand-gray-dark mb-1">
+                  Can I convert Karma to cash?
+                </h4>
+                <p className="text-sm text-gray-600">
+                  Karma points are designed for redeeming rewards within our marketplace. This
+                  ensures they're used to benefit you and the community, not for speculation.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Wallet Tab */}
+      {activeTab === 'wallet' && (
+        <div className="space-y-6 animate-slide-up">
+          {/* Wallet Connection Status */}
+          <div className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white p-8 rounded-xl shadow-lg">
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className="text-2xl font-bold mb-2">Blockchain Wallet</h2>
+                <p className="text-sm opacity-90">
+                  Connect your crypto wallet to enable blockchain payments
+                </p>
+              </div>
+              <div className="text-4xl">💳</div>
+            </div>
+          </div>
+
+          {/* Coming Soon Notice */}
+          <div className="bg-white rounded-lg shadow-md p-6 border-2 border-dashed border-purple-300">
+            <div className="text-center py-8">
+              <div className="text-6xl mb-4">🔗</div>
+              <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                Wallet Integration Coming Soon!
+              </h3>
+              <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                We're building secure wallet connections to support multiple blockchain networks
+                including Ethereum, Polygon, Binance Smart Chain, and Solana. Soon you'll be able to
+                connect your wallet and make seamless blockchain payments.
+              </p>
+
+              {/* Demo Wallet Info */}
+              <div className="bg-purple-50 p-6 rounded-lg max-w-md mx-auto text-left">
+                <h4 className="font-semibold text-purple-900 mb-3">Demo Wallet Features:</h4>
+                <ul className="space-y-2 text-sm text-gray-700">
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-600">✓</span>
+                    <span>Connect MetaMask, WalletConnect, Coinbase Wallet</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-600">✓</span>
+                    <span>Support for ETH, MATIC, BNB, SOL</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-600">✓</span>
+                    <span>Real-time balance tracking</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-600">✓</span>
+                    <span>Transaction history with blockchain explorer links</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-600">✓</span>
+                    <span>Mixed payment options (Karma + Crypto + Cash)</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Supported Networks */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <span>⛓️</span> Supported Networks
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-4 rounded-lg">
+                <div className="text-3xl mb-2">⟠</div>
+                <div className="font-bold">Ethereum</div>
+                <div className="text-sm opacity-90">ETH Mainnet</div>
+              </div>
+              <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-4 rounded-lg">
+                <div className="text-3xl mb-2">⬡</div>
+                <div className="font-bold">Polygon</div>
+                <div className="text-sm opacity-90">MATIC</div>
+              </div>
+              <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 text-white p-4 rounded-lg">
+                <div className="text-3xl mb-2">◆</div>
+                <div className="font-bold">Binance Smart Chain</div>
+                <div className="text-sm opacity-90">BNB</div>
+              </div>
+              <div className="bg-gradient-to-br from-green-500 to-green-600 text-white p-4 rounded-lg">
+                <div className="text-3xl mb-2">◎</div>
+                <div className="font-bold">Solana</div>
+                <div className="text-sm opacity-90">SOL</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Benefits of Blockchain Payments */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <span>💎</span> Why Use Blockchain Payments?
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="flex gap-3">
+                <div className="text-2xl">🔒</div>
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-1">Ultimate Security</h4>
+                  <p className="text-sm text-gray-600">
+                    Your funds are protected by military-grade encryption and decentralized networks
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <div className="text-2xl">⚡</div>
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-1">Lightning Fast</h4>
+                  <p className="text-sm text-gray-600">
+                    Transactions complete in seconds, not days like traditional banking
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <div className="text-2xl">🌍</div>
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-1">Global Access</h4>
+                  <p className="text-sm text-gray-600">
+                    Use your crypto from anywhere in the world with no restrictions
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <div className="text-2xl">💰</div>
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-1">Lower Fees</h4>
+                  <p className="text-sm text-gray-600">
+                    Save money on transaction fees compared to credit cards and banks
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* How It Works */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <span>📚</span> How Blockchain Payments Work
+            </h3>
+            <div className="space-y-4">
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">
+                  1
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-800">Connect Your Wallet</h4>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Use MetaMask or any Web3 wallet to securely connect to the platform
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">
+                  2
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-800">Choose Your Payment Mix</h4>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Select how much to pay with Karma, crypto, or cash for maximum flexibility
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">
+                  3
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-800">Confirm Transaction</h4>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Review the details and approve the transaction in your wallet
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">
+                  4
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-800">Get Your Reward</h4>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Transaction is recorded on blockchain and your reward is delivered instantly
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Notify Button */}
+          <div className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white p-6 rounded-lg text-center">
+            <h3 className="text-xl font-bold mb-2">Want Early Access?</h3>
+            <p className="mb-4 opacity-90">
+              Be the first to know when wallet integration goes live!
+            </p>
+            <button className="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+              Notify Me When Available
+            </button>
+          </div>
         </div>
       )}
     </div>

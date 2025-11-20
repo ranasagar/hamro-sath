@@ -57,9 +57,9 @@ const ReportDisturbanceModal: React.FC<ReportDisturbanceModalProps> = ({ onClose
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[100] p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
-        <div className="p-4 border-b flex justify-between items-center">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[100] p-4 overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-md my-8 max-h-[calc(100vh-4rem)] flex flex-col">
+        <div className="p-4 border-b flex justify-between items-center flex-shrink-0">
           <div className="flex items-center gap-2">
             <WarningIcon className="text-amber-500 w-6 h-6" />
             <h2 className="text-xl font-bold text-amber-600">Report a Disturbance</h2>
@@ -68,8 +68,8 @@ const ReportDisturbanceModal: React.FC<ReportDisturbanceModalProps> = ({ onClose
             <CloseIcon className="w-6 h-6" />
           </button>
         </div>
-        <form onSubmit={handleSubmit}>
-          <div className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+          <div className="p-6 space-y-4 overflow-y-auto flex-1">
             <p className="text-sm text-gray-600">
               Report events that affect community peace. Your report will be verified by other users
               before an alert is created.
@@ -118,15 +118,12 @@ const ReportDisturbanceModal: React.FC<ReportDisturbanceModalProps> = ({ onClose
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Evidence Photos (Optional)
               </label>
-              <MultiImageUpload
-                onUploadComplete={(urls) => setImageUrls(urls)}
-                maxFiles={3}
-              />
+              <MultiImageUpload onUploadComplete={urls => setImageUrls(urls)} maxFiles={3} />
             </div>
 
             <p className="text-xs text-center text-gray-500">{locationStatus}</p>
           </div>
-          <div className="flex justify-end space-x-3 p-4 bg-gray-50 rounded-b-lg">
+          <div className="flex justify-end space-x-3 p-4 bg-gray-50 rounded-b-lg flex-shrink-0">
             <button
               type="button"
               onClick={onClose}

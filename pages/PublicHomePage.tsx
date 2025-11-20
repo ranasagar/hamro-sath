@@ -154,7 +154,7 @@ const PublicHomePage: React.FC<PublicHomePageProps> = ({
       icon: <SPGiftIcon className="w-12 h-12" />,
       title: '3. Earn & Redeem',
       description:
-        'Earn Safa Points (SP) for every positive action and redeem them for real rewards.',
+        'Earn Karma Points (KP) for every positive action and redeem them for real rewards.',
     },
   ];
 
@@ -172,7 +172,7 @@ const PublicHomePage: React.FC<PublicHomePageProps> = ({
     {
       name: 'Rewards Marketplace',
       icon: <GiftIcon />,
-      description: 'Redeem your Safa Points (SP) for real-world rewards from local partners.',
+      description: 'Redeem your Karma Points (KP) for real-world rewards from local partners.',
     },
     {
       name: 'Recycle & Supply Hubs',
@@ -276,7 +276,7 @@ const PublicHomePage: React.FC<PublicHomePageProps> = ({
               <p className="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-brand-green to-brand-blue-dark">
                 <AnimatedStat end={stats.totalPoints} />+
               </p>
-              <p className="text-lg font-semibold text-gray-600">SP Awarded</p>
+              <p className="text-lg font-semibold text-gray-600">KP Awarded</p>
             </div>
           </div>
         </section>

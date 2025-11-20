@@ -71,11 +71,11 @@ const RewardModal: React.FC<RewardModalProps> = ({ reward, userPoints, onClose, 
           
           <div className="flex items-center justify-between mb-4 pb-4 border-b">
             <div>
-              <p className="text-3xl font-bold text-brand-green">{reward.points_required} SP</p>
+              <p className="text-3xl font-bold text-brand-green">{reward.points_required} KP</p>
               <p className="text-sm text-gray-500">Points Required</p>
             </div>
             <div className="text-right">
-              <p className="text-2xl font-bold text-gray-700">{userPoints} SP</p>
+              <p className="text-2xl font-bold text-gray-700">{userPoints} KP</p>
               <p className="text-sm text-gray-500">Your Balance</p>
             </div>
           </div>
@@ -83,7 +83,7 @@ const RewardModal: React.FC<RewardModalProps> = ({ reward, userPoints, onClose, 
           {!canAfford && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
               <p className="font-semibold">Insufficient Points</p>
-              <p className="text-sm">You need {reward.points_required - userPoints} more SP to redeem this reward.</p>
+              <p className="text-sm">You need {reward.points_required - userPoints} more KP to redeem this reward.</p>
             </div>
           )}
 
@@ -149,7 +149,7 @@ const RewardModal: React.FC<RewardModalProps> = ({ reward, userPoints, onClose, 
                   disabled={isRedeeming || reward.quantity_available <= 0}
                   className="flex-1 px-6 py-3 bg-brand-green text-white rounded-lg font-semibold hover:bg-brand-green-dark transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
-                  {isRedeeming ? 'Redeeming...' : `Redeem for ${reward.points_required} SP`}
+                  {isRedeeming ? 'Redeeming...' : `Redeem for ${reward.points_required} KP`}
                 </button>
               </div>
             </form>

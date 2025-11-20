@@ -46,12 +46,12 @@ const QRCodePaymentModal: React.FC<QRCodePaymentModalProps> = ({
             <div className="my-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-600">Total Cost:</span>
-                <span className="font-semibold">{reward.cost.toLocaleString()} SP</span>
+                <span className="font-semibold">{reward.cost.toLocaleString()} KP</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Using your points:</span>
                 <span className="font-semibold text-red-600">
-                  -{pointsToUse.toLocaleString()} SP
+                  -{pointsToUse.toLocaleString()} KP
                 </span>
               </div>
               <hr className="my-2" />

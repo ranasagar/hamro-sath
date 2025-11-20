@@ -35,7 +35,7 @@ const Quiz: React.FC<{
     if (selected === correctIndex) {
       addPoints(
         REWARD_POINTS.QUIZ_COMPLETE,
-        `+${REWARD_POINTS.QUIZ_COMPLETE} SP for your civic knowledge!`
+        `+${REWARD_POINTS.QUIZ_COMPLETE} KP for your civic knowledge!`
       );
       updateUserStats('quizCompleted', true);
       logActivity(currentUser.name, {

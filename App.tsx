@@ -1,7 +1,7 @@
 import React, { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import BottomNav from './components/BottomNav';
-import CivicNudgeModal from './components/CivicNudgeModal';
 import CreateThreadModal from './components/CreateThreadModal';
+import EmergencyAlertModal, { EmergencyIncident } from './components/EmergencyAlertModal';
 import ErrorBoundary from './components/ErrorBoundary';
 import Header from './components/Header';
 import MicroActionsModal from './components/MicroActionsModal';
@@ -28,9 +28,11 @@ import {
   MOCK_CHALLENGES,
   REWARD_POINTS,
 } from './constants';
+import { useAuth } from './contexts/AuthContext';
 import { useAdminIssues } from './hooks/useAdminIssues';
 import { useAdminRewards } from './hooks/useAdminRewards';
 import { useIssues } from './hooks/useIssues';
+import { useUserProfile } from './hooks/useUserProfile';
 
 // Lazy load pages for better performance
 const AdminPage = lazy(() => import('./pages/AdminPage'));
@@ -77,6 +79,10 @@ import {
 } from './types';
 
 const App: React.FC = () => {
+  // Use auth and profile hooks
+  const { user: authUser } = useAuth();
+  const { profile, fetchProfile } = useUserProfile();
+
   // Use API hooks for issues and admin operations
   const {
     issues,
@@ -137,17 +143,8 @@ const App: React.FC = () => {
     const saved = localStorage.getItem('safaNepal-safetyKitRedemptions');
     return saved ? JSON.parse(saved) : INITIAL_SAFETY_KIT_REDEMPTIONS;
   });
-  const [currentUser, setCurrentUser] = useState<UserRank | null>(() => {
-    const savedUser = localStorage.getItem('safaNepal-currentUser');
-    if (savedUser) {
-      const userFromFile = JSON.parse(savedUser);
-      if (userFromFile) {
-        // Ensure user data is up-to-date with the main list
-        return allUsers.find(u => u.name === userFromFile.name) || null;
-      }
-    }
-    return null;
-  });
+  // Initialize currentUser as null - user must login after splash screen
+  const [currentUser, setCurrentUser] = useState<UserRank | null>(null);
 
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [authPage, setAuthPage] = useState<'login' | 'register'>('login');
@@ -156,6 +153,16 @@ const App: React.FC = () => {
   const [forumSortBy, setForumSortBy] = useState<'top' | 'newest'>('top');
   const [leaderboardInitialTab, setLeaderboardInitialTab] = useState<string>('individual');
   const [showSplash, setShowSplash] = useState(true);
+
+  // Fetch user profile when logged in to sync karma points
+  useEffect(() => {
+    if (currentUser && authUser && !profile) {
+      fetchProfile();
+    }
+  }, [currentUser, authUser, profile, fetchProfile]);
+
+  // Calculate current karma (prefer API data over local state)
+  const currentKarma = profile?.stats?.total_points ?? currentUser?.points ?? 0;
 
   // Navigation wrapper that clears thread view
   const navigatePage = (page: Page) => {
@@ -169,8 +176,92 @@ const App: React.FC = () => {
   const [isMicroActionsModalOpen, setIsMicroActionsModalOpen] = useState(false);
   const [isCreateThreadModalOpen, setIsCreateThreadModalOpen] = useState(false);
   const [isStudentQuestsOpen, setIsStudentQuestsOpen] = useState(false);
-  const [isCivicNudgeOpen, setIsCivicNudgeOpen] = useState(false);
+  const [isEmergencyAlertOpen, setIsEmergencyAlertOpen] = useState(false);
   const [viewingReceipt, setViewingReceipt] = useState<PurchaseReceipt | null>(null);
+
+  // Emergency Incidents Management
+  const [emergencyIncidents, setEmergencyIncidents] = useState<EmergencyIncident[]>([
+    {
+      id: 'unconscious',
+      type: 'medical',
+      label: 'Person Unconscious',
+      icon: '😵',
+      color: '#DC2626',
+      authority: 'Medical Emergency',
+      phoneNumber: '102',
+      isActive: true,
+    },
+    {
+      id: 'accident',
+      type: 'accident',
+      label: 'Road Accident',
+      icon: '🚗💥',
+      color: '#EA580C',
+      authority: 'Police & Ambulance',
+      phoneNumber: '100',
+      isActive: true,
+    },
+    {
+      id: 'injured',
+      type: 'medical',
+      label: 'Person Injured',
+      icon: '🩹',
+      color: '#DC2626',
+      authority: 'Medical Emergency',
+      phoneNumber: '102',
+      isActive: true,
+    },
+    {
+      id: 'fire',
+      type: 'fire',
+      label: 'Fire Emergency',
+      icon: '🔥',
+      color: '#DC2626',
+      authority: 'Fire Department',
+      phoneNumber: '101',
+      isActive: true,
+    },
+    {
+      id: 'pet_injured',
+      type: 'animal',
+      label: 'Pet Injured',
+      icon: '🐶🩹',
+      color: '#7C3AED',
+      authority: 'Animal Rescue',
+      phoneNumber: '9851234567',
+      isActive: true,
+    },
+    {
+      id: 'pet_accident',
+      type: 'animal',
+      label: 'Pet in Accident',
+      icon: '🐕🚗',
+      color: '#7C3AED',
+      authority: 'Animal Rescue',
+      phoneNumber: '9851234567',
+      isActive: true,
+    },
+    {
+      id: 'violence',
+      type: 'crime',
+      label: 'Violence/Assault',
+      icon: '⚠️',
+      color: '#DC2626',
+      authority: 'Police',
+      phoneNumber: '100',
+      isActive: true,
+    },
+    {
+      id: 'natural_disaster',
+      type: 'disaster',
+      label: 'Natural Disaster',
+      icon: '🌀',
+      color: '#DC2626',
+      authority: 'Emergency Services',
+      phoneNumber: '103',
+      isActive: true,
+    },
+  ]);
 
   // Derived state
   const individualRanks = useMemo(
@@ -194,13 +285,13 @@ const App: React.FC = () => {
       .map((ward, index) => ({ ...ward, rank: index + 1 }));
   }, [allUsers]);
   const allActivities = useMemo(() => {
-    const userActivities = allUsers.flatMap(u => u.activity);
+    const userActivities = allUsers.flatMap(u => u.activity || []);
     return [...announcements, ...userActivities].sort((a, b) => b.timestamp - a.timestamp);
   }, [allUsers, announcements]);
   const allPurchases = useMemo<AdminPurchaseReceipt[]>(() => {
     return allUsers
       .flatMap(user =>
-        user.purchaseHistory.map(receipt => ({
+        (user.purchaseHistory || []).map(receipt => ({
           ...receipt,
           userAvatar: user.avatar,
         }))
@@ -279,8 +370,13 @@ const App: React.FC = () => {
         )
       );
       setToast({ message, isReward: true });
+
+      // Refresh profile to sync karma from backend
+      if (targetUser === currentUser?.name) {
+        setTimeout(() => fetchProfile(), 500);
+      }
     },
-    [currentUser?.name]
+    [currentUser?.name, fetchProfile]
   );
 
   const updateUserStats = useCallback(
@@ -346,12 +442,41 @@ const App: React.FC = () => {
   const handleLogin = (email: string) => {
     // AuthContext already handled API login, just sync UI state
     const userToLogin = allUsers.find(
-      user => user.name.toLowerCase().replace(' ', '') + '@safa.com' === email
+      user => user.name.toLowerCase().replace(/\s+/g, '') + '@safa.com' === email
     );
     if (userToLogin) {
-      setCurrentUser(userToLogin);
+      // Ensure user has all required properties with defaults
+      const completeUser: UserRank = {
+        ...userToLogin,
+        activity: userToLogin.activity || [],
+        purchaseHistory: userToLogin.purchaseHistory || [],
+        notifications: userToLogin.notifications || [],
+        stats: userToLogin.stats || {
+          reportsMade: 0,
+          eventsOrganized: 0,
+          eventsJoined: 0,
+          quizCompleted: false,
+          recyclingLogs: 0,
+          supplyKitsPickedUp: 0,
+          supplyKitsToday: 0,
+          microActionsLogged: 0,
+          microActionsToday: 0,
+          disturbanceReports: 0,
+          safetyKitsRedeemed: 0,
+        },
+      };
+      console.log('Setting current user:', completeUser);
+      setCurrentUser(completeUser);
       return true;
     }
+    console.error('User not found for email:', email);
+    console.log(
+      'Available users:',
+      allUsers.map(u => ({
+        name: u.name,
+        email: u.name.toLowerCase().replace(/\s+/g, '') + '@safa.com',
+      }))
+    );
     return false;
   };
 
@@ -531,18 +656,58 @@ const App: React.FC = () => {
     }
   };
 
-  const handleNudgeSend = async (friendName: string, message: string, memeId?: number) => {
+  const handleEmergencyAlert = async (
+    incident: EmergencyIncident,
+    location: string,
+    details: string,
+    contactNumber: string
+  ) => {
     if (!currentUser) return;
 
     try {
-      // TODO: POST to backend /api/civic-nudges
-      console.log('Nudge sent to:', friendName, message, memeId);
+      // Create emergency report
+      const emergencyReport = {
+        id: Date.now(),
+        user: currentUser.name,
+        incident: incident.label,
+        location,
+        details,
+        contactNumber,
+        timestamp: new Date().toISOString(),
+        status: 'reported',
+      };
 
-      showToast(`Anonymous nudge sent to ${friendName}! 📨`, 'success');
-      setIsCivicNudgeOpen(false);
+      // Create WhatsApp message
+      const whatsappMessage = encodeURIComponent(
+        `🚨 EMERGENCY ALERT\n\n` +
+          `Type: ${incident.label}\n` +
+          `Location: ${location}\n` +
+          `Details: ${details || 'N/A'}\n` +
+          `Contact: ${contactNumber}\n` +
+          `Reporter: ${currentUser.name}\n` +
+          `Time: ${new Date().toLocaleString()}\n\n` +
+          `Please respond immediately!`
+      );
+
+      // Open WhatsApp with pre-filled message
+      const whatsappUrl = `https://wa.me/${incident.phoneNumber.replace(/\D/g, '')}?text=${whatsappMessage}`;
+      window.open(whatsappUrl, '_blank');
+
+      // Log activity
+      logActivity(currentUser.name, {
+        type: 'reported',
+        description: `reported emergency: ${incident.label} at ${location}`,
+        pointsChange: 0,
+      });
+
+      // Notify admin (in real app, would POST to backend)
+      console.log('Emergency reported to admin:', emergencyReport);
+
+      showToast(`🚨 Emergency alert sent to ${incident.authority}! Stay safe.`, 'success');
+      setIsEmergencyAlertOpen(false);
     } catch (error) {
-      console.error('Nudge send error:', error);
-      showToast('Failed to send nudge. Please try again.', 'error');
+      console.error('Emergency alert error:', error);
+      showToast('Failed to send emergency alert. Please call directly.', 'error');
     }
   };
 
@@ -846,6 +1011,11 @@ const App: React.FC = () => {
     const reward = await createReward(newReward);
     if (reward) {
       setRewards(prev => [reward, ...prev]);
+      // Also persist to localStorage
+      const updatedRewards = [reward, ...rewards];
+      localStorage.setItem('safaNepal-rewards', JSON.stringify(updatedRewards));
+      // Dispatch custom event to notify other components
+      window.dispatchEvent(new Event('rewardsUpdated'));
       showToast('Reward created successfully', 'success');
     } else {
       showToast('Failed to create reward', 'error');
@@ -854,19 +1024,32 @@ const App: React.FC = () => {
 
   const handleAdminEditReward = async (updatedReward: Reward) => {
     const { id, ...data } = updatedReward;
-    const reward = await updateReward(id, data);
-    if (reward) {
-      setRewards(prev => prev.map(r => (r.id === id ? reward : r)));
-      showToast('Reward updated successfully', 'success');
-    } else {
-      showToast('Failed to update reward', 'error');
-    }
+
+    // Update the local state immediately for instant UI feedback
+    setRewards(prev => prev.map(r => (r.id === id ? updatedReward : r)));
+
+    // Also persist to localStorage for offline capability
+    const updatedRewards = rewards.map(r => (r.id === id ? updatedReward : r));
+    localStorage.setItem('safaNepal-rewards', JSON.stringify(updatedRewards));
+
+    // Dispatch custom event to notify other components (same tab)
+    window.dispatchEvent(new Event('rewardsUpdated'));
+
+    // Optionally sync with API if needed (can be added later)
+    // const reward = await updateReward(id, data);
+
+    showToast('Reward updated successfully', 'success');
   };
 
   const handleAdminDeleteReward = async (rewardId: number) => {
     const success = await deleteReward(rewardId);
     if (success) {
       setRewards(prev => prev.filter(r => r.id !== rewardId));
+      // Update localStorage
+      const updatedRewards = rewards.filter(r => r.id !== rewardId);
+      localStorage.setItem('safaNepal-rewards', JSON.stringify(updatedRewards));
+      // Dispatch custom event
+      window.dispatchEvent(new Event('rewardsUpdated'));
       showToast('Reward deleted successfully', 'success');
     } else {
       showToast('Failed to delete reward', 'error');
@@ -1049,8 +1232,28 @@ const App: React.FC = () => {
     );
   }
 
+  // Safety check: ensure currentUser has required properties
+  if (!currentUser || !currentUser.stats || !currentUser.activity || !currentUser.purchaseHistory) {
+    console.log('Waiting for complete user data...', { currentUser });
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-green mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your profile...</p>
+        </div>
+      </div>
+    );
+  }
+
   const earnedBadgeIds = new Set(
-    MOCK_ALL_BADGES.filter(badge => badge.condition(currentUser.stats)).map(b => b.id)
+    MOCK_ALL_BADGES.filter(badge => {
+      try {
+        return badge.condition(currentUser.stats);
+      } catch (error) {
+        console.error('Error checking badge condition:', badge.name, error);
+        return false;
+      }
+    }).map(b => b.id)
   );
 
   const renderPage = () => {
@@ -1097,7 +1300,7 @@ const App: React.FC = () => {
             onOpenDisturbanceModal={() => setIsDisturbanceModalOpen(true)}
             onOpenMicroActionsModal={() => setIsMicroActionsModalOpen(true)}
             onOpenStudentQuestsModal={() => setIsStudentQuestsOpen(true)}
-            onOpenCivicNudgeModal={() => setIsCivicNudgeOpen(true)}
+            onOpenEmergencyAlert={() => setIsEmergencyAlertOpen(true)}
             featureFlags={featureFlags}
             onViewThread={handleViewThread}
             issuesLoading={issuesLoading}
@@ -1114,7 +1317,7 @@ const App: React.FC = () => {
           />
         );
       case 'rewards':
-        return <RewardsPage />;
+        return <RewardsPage heroSlides={heroSlides} />;
       case 'hub':
         return (
           <CivicSenseHubPage
@@ -1213,7 +1416,7 @@ const App: React.FC = () => {
             onOpenDisturbanceModal={() => setIsDisturbanceModalOpen(true)}
             onOpenMicroActionsModal={() => setIsMicroActionsModalOpen(true)}
             onOpenStudentQuestsModal={() => setIsStudentQuestsOpen(true)}
-            onOpenCivicNudgeModal={() => setIsCivicNudgeOpen(true)}
+            onOpenEmergencyAlert={() => setIsEmergencyAlertOpen(true)}
             featureFlags={featureFlags}
             onViewThread={handleViewThread}
             issuesLoading={issuesLoading}
@@ -1242,7 +1445,7 @@ const App: React.FC = () => {
             onOpenDisturbanceModal={() => setIsDisturbanceModalOpen(true)}
             onOpenMicroActionsModal={() => setIsMicroActionsModalOpen(true)}
             onOpenStudentQuestsModal={() => setIsStudentQuestsOpen(true)}
-            onOpenCivicNudgeModal={() => setIsCivicNudgeOpen(true)}
+            onOpenEmergencyAlert={() => setIsEmergencyAlertOpen(true)}
             featureFlags={featureFlags}
             onViewThread={handleViewThread}
             issuesLoading={issuesLoading}
@@ -1258,17 +1461,13 @@ const App: React.FC = () => {
 
   return (
     <ErrorBoundary>
-      <div className="relative pb-20 min-h-screen bg-brand-gray-light">
+      <div className="relative pb-20 min-h-screen bg-gradient-to-b from-[#F5FAFF] via-[#E6F0FA] to-[#E6F0FA]">
         <SkipToContent />
         <Toast toast={toast} onClear={() => setToast(null)} />
         {viewingReceipt && (
           <ReceiptModal receipt={viewingReceipt} onClose={() => setViewingReceipt(null)} />
         )}
-        <Header
-          points={currentUser.points}
-          currentUser={currentUser}
-          setCurrentPage={setCurrentPage}
-        />
+        <Header points={currentKarma} currentUser={currentUser} setCurrentPage={setCurrentPage} />
         <main id="main-content" className="pt-16 pb-20 min-h-screen" role="main">
           <ErrorBoundary
             fallback={
@@ -1318,11 +1517,12 @@ const App: React.FC = () => {
             schoolId={currentUser?.schoolId}
           />
         )}
-        {isCivicNudgeOpen && (
-          <CivicNudgeModal
-            onClose={() => setIsCivicNudgeOpen(false)}
-            onSendNudge={handleNudgeSend}
-            friends={allUsers.map(u => ({ id: u.id, name: u.name, avatar: u.avatar }))}
+        {isEmergencyAlertOpen && (
+          <EmergencyAlertModal
+            onClose={() => setIsEmergencyAlertOpen(false)}
+            onReportEmergency={handleEmergencyAlert}
+            incidents={emergencyIncidents}
+            currentLocation={currentUser?.ward}
           />
         )}
       </div>

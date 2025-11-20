@@ -93,7 +93,7 @@ const SafetyKitRedemptionModal: React.FC<SafetyKitRedemptionModalProps> = ({
         <form onSubmit={handleSubmit}>
           <div className="p-6 space-y-4">
             <p className="text-sm text-gray-600">
-              To claim <span className="font-bold">{REWARD_POINTS.SAFETY_KIT_REDEMPTION} SP</span>,
+              To claim <span className="font-bold">{REWARD_POINTS.SAFETY_KIT_REDEMPTION} KP</span>,
               please upload a clear photo of the receipt for your purchase of a safety kit (gloves,
               bags, etc.).
             </p>

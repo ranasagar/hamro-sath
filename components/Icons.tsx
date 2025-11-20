@@ -38,6 +38,7 @@ export const TrophyIcon: React.FC<{ className?: string }> = ({ className }) => (
     <path
       d="M18 10H6C4.89543 10 4 10.8954 4 12V16C4 18.2091 5.79086 20 8 20H16C18.2091 20 20 18.2091 20 16V12C20 10.8954 19.1046 10 18 10Z"
       fill="#FBBF24"
+      opacity="0.8"
     />
     <path
       d="M12 10V4M12 4H15M12 4H9"
@@ -51,7 +52,6 @@ export const TrophyIcon: React.FC<{ className?: string }> = ({ className }) => (
       stroke="#F59E0B"
       strokeWidth="2"
       strokeLinecap="round"
-      strokeLinejoin="round"
     />
     <path
       d="M12 20V22"
@@ -62,24 +62,7 @@ export const TrophyIcon: React.FC<{ className?: string }> = ({ className }) => (
     />
   </svg>
 );
-export const GiftIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg
-    className={className || iconClass}
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <rect x="3" y="10" width="18" height="11" rx="2" fill="#93C5FD" />
-    <path d="M12 21V10" stroke="#1E40AF" strokeWidth="2" />
-    <rect x="5" y="5" width="14" height="5" rx="1" fill="#3B82F6" />
-    <path
-      d="M12 10C10.3431 10 9 8.65685 9 7C9 5.34315 10.3431 4 12 4C13.6569 4 15 5.34315 15 7C15 8.65685 13.6569 10 12 10Z"
-      fill="#93C5FD"
-      stroke="#1E40AF"
-      strokeWidth="2"
-    />
-  </svg>
-);
+
 export const RecyclingIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg
     className={className || iconClass}
@@ -143,29 +126,30 @@ export const UserCircleIcon: React.FC<{ className?: string }> = ({ className }) 
   <svg
     className={className || iconClass}
     viewBox="0 0 24 24"
-    fill="none"
+    fill="currentColor"
     xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
   >
-    <circle cx="12" cy="12" r="10" fill="#93C5FD" />
-    <circle cx="12" cy="10" r="4" fill="#3B82F6" />
-    <path
-      d="M17.9691 20C17.81 17.1085 15.2371 15 12 15C8.76292 15 6.19004 17.1085 6.03088 20"
-      fill="#3B82F6"
-    />
+    <circle cx="12" cy="12" r="10" opacity="0.2" />
+    <circle cx="12" cy="10" r="4" />
+    <path d="M17.9691 20C17.81 17.1085 15.2371 15 12 15C8.76292 15 6.19004 17.1085 6.03088 20" />
   </svg>
 );
 export const AdminPanelIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg
     className={className || iconClass}
     viewBox="0 0 24 24"
-    fill="none"
+    fill="currentColor"
     xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
   >
     <path
       d="M12 21.6219C17.1765 20.2891 21 15.5915 21 9.74902V5.41882C21 4.70327 20.4494 4.10237 19.7574 4.0202L12.5574 3.0202C12.2103 2.97686 11.7897 2.97686 11.4426 3.0202L4.24256 4.0202C3.55059 4.10237 3 4.70327 3 5.41882V9.74902C3 15.5915 6.82355 20.2891 12 21.6219Z"
-      fill="#93C5FD"
+      opacity="0.2"
     />
-    <path d="M15 11L12 14L9 11L12 8L15 11Z" fill="#1E40AF" />
+    <path d="M15 11L12 14L9 11L12 8L15 11Z" />
   </svg>
 );
 export const PlusIcon: React.FC<{ className?: string }> = ({ className }) => (
@@ -456,6 +440,30 @@ export const MegaphoneIcon: React.FC<{ className?: string }> = ({ className }) =
     />
   </svg>
 );
+
+export const AlertIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg
+    className={className || 'w-6 h-6'}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+      fill="#DC2626"
+      stroke="#991B1B"
+      strokeWidth="2"
+    />
+    <path
+      d="M12 8V12M12 16H12.01"
+      stroke="white"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 export const WarningIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg
     className={className || iconClass}
@@ -1060,6 +1068,77 @@ export const CameraPinIcon: React.FC<{ className?: string }> = ({ className }) =
     <circle cx="12" cy="10.5" r="1.5" fill="currentColor" />
   </svg>
 );
+
+export const GiftIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg
+    className={className || iconClass}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect x="3" y="10" width="18" height="4" rx="1" fill="#F59E0B" opacity="0.4" />
+    <rect x="5" y="14" width="14" height="8" rx="1" fill="#FBBF24" opacity="0.6" />
+    <path d="M12 10V22" stroke="#D97706" strokeWidth="2" strokeLinecap="round" />
+    <path
+      d="M12 10C12 8.89543 11.1046 8 10 8C8.89543 8 8 6.89543 8 5.5C8 4.11929 9.11929 3 10.5 3C11.8807 3 13 4.11929 13 5.5V10"
+      fill="#EF4444"
+      opacity="0.7"
+    />
+    <path
+      d="M12 10C12 8.89543 12.8954 8 14 8C15.1046 8 16 6.89543 16 5.5C16 4.11929 14.8807 3 13.5 3C12.1193 3 11 4.11929 11 5.5V10"
+      fill="#EF4444"
+      opacity="0.7"
+    />
+  </svg>
+);
+
 export const SPGiftIcon: React.FC<{ className?: string }> = ({ className }) => (
   <GiftIcon className={className} />
+);
+
+export const CoinsIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg
+    className={className || iconClass}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle cx="9" cy="9" r="6" fill="#FBBF24" stroke="#F59E0B" strokeWidth="1.5" />
+    <circle cx="15" cy="15" r="6" fill="#FCD34D" stroke="#F59E0B" strokeWidth="1.5" />
+    <text x="9" y="11" fontSize="6" fill="#92400E" textAnchor="middle" fontWeight="bold">
+      K
+    </text>
+    <text x="15" y="17" fontSize="6" fill="#92400E" textAnchor="middle" fontWeight="bold">
+      P
+    </text>
+  </svg>
+);
+
+export const DownloadIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg
+    className={className || iconClass}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const SearchIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg
+    className={className || iconClass}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" />
+    <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+  </svg>
 );
