@@ -1,0 +1,44 @@
+# Dependencies
+node_modules
+
+# Tests
+*.test.ts
+*.spec.ts
+coverage
+.nyc_output
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Version control
+.git
+.gitignore
+
+# Documentation
+README.md
+IMPLEMENTATION_SUMMARY.md
+DEPLOYMENT.md
+VERCEL_DEPLOYMENT.md
+PRE-DEPLOYMENT-CHECKLIST.md
+API_QUICK_REFERENCE.md
+VERIFICATION_REPORT.md
+*.md
+
+# Config files (keep tsconfig.json and src for build!)
+jest.config.js
+.eslintrc.*
+.prettierrc
+
+# Runtime
+uploads
+logs
+*.log
+
+# Database
+migrations
+
+# Docker
+Dockerfile
+.dockerignore

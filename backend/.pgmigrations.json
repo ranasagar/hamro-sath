@@ -1,0 +1,10 @@
+{
+  "databaseUrl": {
+    "env": "DATABASE_URL"
+  },
+  "dir": "migrations",
+  "migrationsTable": "pgmigrations",
+  "direction": "up",
+  "createSchema": true,
+  "createMigrationsSchema": false
+}

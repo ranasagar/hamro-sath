@@ -1,0 +1,19 @@
+# Ignore build outputs
+dist
+node_modules
+build
+coverage
+
+# Ignore generated files
+*.log
+.DS_Store
+*.local
+
+# Ignore lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Ignore config files that shouldn't be formatted
+.env*
+*.md
