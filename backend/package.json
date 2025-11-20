@@ -14,6 +14,11 @@
     "lint:fix": "eslint src --ext .ts --fix",
     "format": "prettier --write \"src/**/*.ts\"",
     "migrate": "node-pg-migrate",
+    "db:test": "node scripts/test-connection.js",
+    "db:setup": "node scripts/setup-database.js",
+    "db:migrate": "npm run migrate up",
+    "db:rollback": "npm run migrate down",
+    "db:status": "npm run migrate status",
     "vercel-build": "tsc --project .",
     "deploy:vercel": "vercel --prod",
     "deploy:railway": "railway up"
