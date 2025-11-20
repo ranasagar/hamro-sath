@@ -3,7 +3,7 @@
  * Karma Points, Blockchain, Civic Hubs, Social Tools
  */
 
-import pool from '../database/connection';
+import { pool } from '../database/connection';
 import {
   CarbonFootprint,
   CivicNudge,
