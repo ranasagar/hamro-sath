@@ -24,8 +24,10 @@ app.use(helmet());
 // CORS configuration - allow production and all preview deployments
 const allowedOrigins = [
   config.cors.origin,
+  'https://hamro-sath.vercel.app', // Production frontend
   'https://hamro-saath-safa-nepal-v3.vercel.app',
   /^https:\/\/hamro-saath-safa-nepal-v3-.*\.vercel\.app$/,
+  /^https:\/\/hamro-sath-.*\.vercel\.app$/, // Production preview deployments
 ];
 
 app.use(
