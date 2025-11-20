@@ -31,6 +31,7 @@ export const optionalAuthMiddleware = async (
 
       req.user = {
         userId: decoded.userId,
+        id: decoded.userId, // Alias for compatibility
         email: decoded.email,
         role: decoded.role,
       };

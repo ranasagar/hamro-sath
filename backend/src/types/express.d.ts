@@ -2,10 +2,10 @@
 declare namespace Express {
   export interface Request {
     user?: {
-      id: number;
+      userId: number;
+      id: number; // Alias for userId for compatibility
       email: string;
       role: string;
-      [key: string]: any;
     };
   }
 }

@@ -2,13 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 import { JWTService } from '../utils/jwt';
 import { AppError } from './errorHandler';
 
-export interface AuthRequest extends Request {
-  user?: {
-    userId: number;
-    email: string;
-    role: string;
-  };
-}
+// AuthRequest now defined in src/types/express.d.ts
+export type AuthRequest = Request;
 
 export const authenticate = async (
   req: AuthRequest,
@@ -28,6 +23,7 @@ export const authenticate = async (
       const payload = JWTService.verifyAccessToken(token);
       req.user = {
         userId: payload.userId,
+        id: payload.userId, // Alias for compatibility
         email: payload.email,
         role: payload.role,
       };
