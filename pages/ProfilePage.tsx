@@ -15,12 +15,14 @@ const ProfilePage: React.FC<ProfilePageProps> = () => {
   const { user: authUser } = useAuth();
   const { profile, activities, loading, error, fetchProfile, fetchActivities } = useUserProfile();
   const [activeTab, setActiveTab] = useState<'stats' | 'activity' | 'badges'>('stats');
+  const [hasFetched, setHasFetched] = useState(false);
 
   useEffect(() => {
-    if (authUser && !profile) {
+    if (authUser && !profile && !loading && !hasFetched) {
+      setHasFetched(true);
       fetchProfile();
     }
-  }, [authUser, profile]);
+  }, [authUser, profile, loading, hasFetched, fetchProfile]);
 
   useEffect(() => {
     if (profile?.id) {
@@ -151,7 +153,7 @@ const ProfilePage: React.FC<ProfilePageProps> = () => {
                 <TrophyIcon className="w-6 h-6" />
                 <span className="text-2xl">{stats.total_points.toLocaleString()}</span>
               </div>
-              <div className="text-xs opacity-90">Safa Points</div>
+              <div className="text-xs opacity-90">Karma Points</div>
             </div>
           </div>
         </div>
@@ -222,7 +224,7 @@ const ProfilePage: React.FC<ProfilePageProps> = () => {
           <div className="bg-white p-4 sm:p-6 rounded-lg shadow-subtle text-center col-span-2 transform transition-all hover:shadow-md hover:-translate-y-1">
             <RecyclingIcon className="w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-2 text-lime-500" />
             <p className="text-2xl sm:text-3xl font-bold text-brand-gray-dark">
-              {stats.recycle_weight_kg.toFixed(1)} kg
+              {(stats.recycle_weight_kg || 0).toFixed(1)} kg
             </p>
             <p className="text-xs sm:text-sm text-gray-600 mt-1">Total Recycled</p>
           </div>
@@ -262,7 +264,7 @@ const ProfilePage: React.FC<ProfilePageProps> = () => {
                         {activity.points_earned > 0 && (
                           <div className="ml-4 text-right">
                             <span className="text-brand-green font-bold">
-                              +{activity.points_earned} SP
+                              +{activity.points_earned} Karma
                             </span>
                           </div>
                         )}

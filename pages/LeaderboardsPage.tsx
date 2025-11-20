@@ -65,7 +65,9 @@ const UserRankItem: React.FC<{ user: UserRank }> = ({ user }) => {
         <p className="font-semibold text-gray-800">{user.name}</p>
         <p className="text-sm text-gray-500">{user.ward}</p>
       </div>
-      <span className="font-bold text-brand-green">{user.points.toLocaleString()} SP</span>
+      <span className="font-bold text-brand-green">
+        {(user.points || 0).toLocaleString()} Karma
+      </span>
     </li>
   );
 };
@@ -95,7 +97,9 @@ const WardRankItem: React.FC<{ ward: WardRank }> = ({ ward }) => {
       <div className="flex-grow">
         <p className="font-semibold text-gray-800">{ward.name}</p>
       </div>
-      <span className="font-bold text-brand-green">{ward.points.toLocaleString()} SP</span>
+      <span className="font-bold text-brand-green">
+        {(ward.points || 0).toLocaleString()} Karma
+      </span>
     </li>
   );
 };
@@ -198,7 +202,7 @@ const ChallengesTab: React.FC = () => {
             <div>
               <span className="text-purple-600 font-semibold">Target:</span>
               <p className="text-purple-900 font-bold">
-                {selectedChallenge.target_points.toLocaleString()} SP
+                {(selectedChallenge.target_points || 0).toLocaleString()} Karma
               </p>
             </div>
             <div>
@@ -260,7 +264,7 @@ const ChallengesTab: React.FC = () => {
                   <p className="font-semibold text-gray-800">{entry.full_name}</p>
                 </div>
                 <span className="font-bold text-purple-600">
-                  {entry.points_earned.toLocaleString()} SP
+                  {(entry.points_earned || 0).toLocaleString()} Karma
                 </span>
               </li>
             );

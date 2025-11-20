@@ -31,9 +31,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Load user on mount if authenticated
+  // Load user on mount if authenticated (with delay to let splash screen clear tokens first)
   useEffect(() => {
     const loadUser = async () => {
+      // Small delay to ensure splash screen token cleanup completes first
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       try {
         if (authService.isAuthenticated()) {
           setIsLoading(true);
@@ -44,12 +47,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             console.error('Failed to load user profile:', err);
             // Token might be invalid, clear it
             authService.clearTokens();
+            setUser(null);
           } finally {
             setIsLoading(false);
           }
+        } else {
+          // No tokens, ensure user is null
+          setUser(null);
         }
       } catch (err) {
         console.error('Error in auth initialization:', err);
+        setUser(null);
         setIsLoading(false);
       }
     };
@@ -67,12 +75,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Check if data migration is needed
       const migrationSummary = getMigrationSummary();
       if (migrationSummary.hasData && !migrationSummary.isComplete) {
-        console.log('[Auth] Detected localStorage data, starting migration...');
+        console.warn('[Auth] Detected localStorage data, starting migration...');
         performDataMigration()
           .then((status: MigrationStatus) => {
-            console.log('[Auth] Migration completed:', status);
+            console.warn('[Auth] Migration completed:', status);
           })
-          .catch((err: any) => {
+          .catch((err: unknown) => {
             console.error('[Auth] Migration failed:', err);
           });
       }

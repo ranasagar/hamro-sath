@@ -93,7 +93,37 @@ class AuthService {
   }
 
   async getProfile(): Promise<UserProfile> {
-    return apiClient.get<UserProfile>(API_ENDPOINTS.GET_PROFILE);
+    const response = await apiClient.get<any>(API_ENDPOINTS.GET_PROFILE);
+    // Mock server returns { success: true, data: { user data } }
+    const userData = response.data || response.user || response;
+
+    if (!userData || !userData.id) {
+      throw new Error('Invalid profile data received');
+    }
+
+    // Normalize the response to UserProfile format
+    return {
+      id: userData.id,
+      email: userData.email,
+      username: userData.username,
+      full_name: userData.full_name,
+      ward_id: userData.ward_id,
+      avatar_url: userData.avatar_url,
+      role: userData.role || 'citizen',
+      is_verified: userData.is_verified || false,
+      created_at: userData.created_at,
+      phone: userData.phone || null,
+      stats: userData.stats || {
+        total_points: userData.karma_balance || 0,
+        issues_reported: 0,
+        issues_resolved: 0,
+        recycle_count: 0,
+        recycle_weight_kg: 0,
+        volunteer_hours: 0,
+        current_streak: 0,
+        longest_streak: 0,
+      },
+    };
   }
 
   async updateProfile(data: Partial<UserProfile>): Promise<UserProfile> {

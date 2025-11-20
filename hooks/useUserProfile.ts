@@ -49,16 +49,49 @@ export const useUserProfile = (userId?: number) => {
     setError(null);
     try {
       const endpoint = id ? `/api/v1/users/${id}` : '/api/v1/users/me';
-      const response = await apiClient.get<{ user: UserProfileData }>(endpoint);
-      const userData = response.user || response;
+      const response = await apiClient.get<any>(endpoint);
+      // Mock server returns { success: true, data: { user data } }
+      // Handle both response.data.data and response.data patterns
+      const userData = response.data?.data || response.data || response.user || response;
+
+      // Ensure we have valid user data
       if (!userData || !userData.id) {
+        console.error('Invalid profile data received:', response);
         throw new Error('Invalid profile data received');
       }
-      setProfile(userData as UserProfileData);
-      return userData as UserProfileData;
+
+      // Normalize the data structure
+      const normalizedProfile: UserProfileData = {
+        id: userData.id,
+        email: userData.email,
+        username: userData.username,
+        full_name: userData.full_name,
+        avatar_url: userData.avatar_url,
+        ward_id: userData.ward_id,
+        karma_balance: userData.karma_balance,
+        role: userData.role || 'citizen',
+        is_verified: userData.is_verified || false,
+        created_at: userData.created_at,
+        phone: userData.phone || null,
+        stats: userData.stats || {
+          total_points: userData.karma_balance || 0,
+          issues_reported: 0,
+          issues_resolved: 0,
+          recycle_count: 0,
+          recycle_weight_kg: 0,
+          volunteer_hours: 0,
+          current_streak: 0,
+          longest_streak: 0,
+        },
+        badges: userData.badges || [],
+      };
+
+      setProfile(normalizedProfile);
+      return normalizedProfile;
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
       const errorMessage = error.response?.data?.message || 'Failed to fetch profile';
+      console.error('fetchProfile error:', err);
       setError(errorMessage);
       setProfile(null);
       return null;
@@ -74,12 +107,13 @@ export const useUserProfile = (userId?: number) => {
         console.warn('No user ID available for fetching activities');
         return { activities: [], total: 0 };
       }
-      const response = await apiClient.get<{ activities: UserActivity[]; total: number }>(
-        `/api/v1/users/${targetId}/activities`,
-        { params: { limit, offset } }
-      );
-      setActivities(response.activities || []);
-      return response;
+      const response = await apiClient.get<any>(`/api/v1/users/${targetId}/activities`, {
+        params: { limit, offset },
+      });
+      // Handle both response.data and response.activities patterns
+      const activitiesData = response.data || response.activities || [];
+      setActivities(activitiesData);
+      return { activities: activitiesData, total: response.total || activitiesData.length };
     } catch (err: unknown) {
       console.error('Failed to fetch activities:', err);
       // Don't set error state for activities - just log it

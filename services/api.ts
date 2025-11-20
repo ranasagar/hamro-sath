@@ -17,8 +17,8 @@ export interface ApiError {
 }
 
 // Token storage keys
-const ACCESS_TOKEN_KEY = 'access_token';
-const REFRESH_TOKEN_KEY = 'refresh_token';
+const ACCESS_TOKEN_KEY = 'safa_access_token';
+const REFRESH_TOKEN_KEY = 'safa_refresh_token';
 
 class ApiClient {
   private client: AxiosInstance;
@@ -38,19 +38,19 @@ class ApiClient {
   private setupInterceptors(): void {
     // Request interceptor - Add auth token
     this.client.interceptors.request.use(
-      (config) => {
+      config => {
         const token = this.getAccessToken();
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
       },
-      (error) => Promise.reject(error)
+      error => Promise.reject(error)
     );
 
     // Response interceptor - Handle errors and token refresh
     this.client.interceptors.response.use(
-      (response) => response,
+      response => response,
       async (error: AxiosError) => {
         const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
@@ -143,11 +143,7 @@ class ApiClient {
     return response.data.data as T;
   }
 
-  async post<T = unknown>(
-    url: string,
-    data?: unknown,
-    config?: AxiosRequestConfig
-  ): Promise<T> {
+  async post<T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
     const response: AxiosResponse<ApiResponse<T>> = await this.client.post(url, data, config);
     return response.data.data as T;
   }
@@ -183,7 +179,7 @@ class ApiClient {
   // Upload multiple files
   async uploadFiles<T = unknown>(url: string, files: File[], fieldName = 'images'): Promise<T> {
     const formData = new FormData();
-    files.forEach((file) => {
+    files.forEach(file => {
       formData.append(fieldName, file);
     });
 

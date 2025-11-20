@@ -10,7 +10,10 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ points, currentUser, setCurrentPage }) => {
   return (
-    <header className="bg-white/90 backdrop-blur-lg shadow-md fixed top-0 left-0 right-0 z-50" role="banner">
+    <header
+      className="bg-white/90 backdrop-blur-lg shadow-md fixed top-0 left-0 right-0 z-50"
+      role="banner"
+    >
       <div className="container mx-auto px-4 h-16 flex justify-between items-center">
         <h1 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-green to-brand-blue-dark">
           Hamro Saath, Safa Nepal
@@ -18,12 +21,13 @@ const Header: React.FC<HeaderProps> = ({ points, currentUser, setCurrentPage }) 
         <div className="flex items-center space-x-4">
           {currentUser && (
             <>
-              <div 
+              <div
                 className="flex items-center space-x-2 bg-gradient-to-r from-brand-green/80 to-brand-blue/80 text-white font-bold py-1.5 px-4 rounded-full shadow-sm"
-                aria-label={`Your Safa Points: ${points.toLocaleString()}`}
+                aria-label={`Your Karma Points: ${points.toLocaleString()}`}
               >
-                <span aria-hidden="true">SP</span>
+                <span aria-hidden="true">⚡</span>
                 <span className="font-mono">{points.toLocaleString()}</span>
+                <span className="text-xs opacity-90">Karma</span>
               </div>
               <nav aria-label="User navigation">
                 <div className="flex items-center space-x-2">

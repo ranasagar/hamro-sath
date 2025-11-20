@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import React, { useState } from 'react';
 import { AtSymbolIcon, LockClosedIcon, UserIcon } from '../components/Icons';
 import { useAuth } from '../contexts/AuthContext';
@@ -78,151 +79,218 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ wards, onRegister, onSwitch
   const displayError = localError || error;
 
   return (
-    <div className="min-h-screen bg-brand-gray-light flex flex-col justify-center items-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-brand-green-dark mb-2">Join the Movement</h1>
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 flex flex-col justify-center items-center p-4">
+      <motion.div
+        className="w-full max-w-md"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <motion.div
+          className="text-center mb-8"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+        >
+          <motion.h1
+            className="text-3xl font-bold text-brand-green-dark mb-2"
+            animate={{
+              scale: [1, 1.02, 1],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+          >
+            Join the Movement
+          </motion.h1>
           <p className="text-gray-600">Create your account to start cleaning up Nepal.</p>
-        </div>
+        </motion.div>
 
-        <div className="bg-white p-8 rounded-lg shadow-lg">
-          {step === 1 && (
-            <form onSubmit={handleNextStep} className="space-y-6">
-              {displayError && <p className="text-red-500 text-sm text-center">{displayError}</p>}
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                  Full Name
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <UserIcon className="text-gray-400" />
-                  </div>
-                  <input
-                    type="text"
-                    name="name"
-                    id="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-brand-green focus:border-brand-green text-gray-900"
-                    placeholder="Your Name"
-                    required
-                  />
-                </div>
-              </div>
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <AtSymbolIcon className="text-gray-400" />
-                  </div>
-                  <input
-                    type="email"
-                    name="email"
-                    id="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-brand-green focus:border-brand-green text-gray-900"
-                    placeholder="you@example.com"
-                    required
-                  />
-                </div>
-              </div>
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                  Password
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <LockClosedIcon className="text-gray-400" />
-                  </div>
-                  <input
-                    type="password"
-                    name="password"
-                    id="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-brand-green focus:border-brand-green text-gray-900"
-                    placeholder="••••••••"
-                    required
-                  />
-                </div>
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-brand-green text-white font-bold py-3 px-4 rounded-lg hover:bg-brand-green-dark transition-colors duration-300"
+        <motion.div
+          className="bg-white p-8 rounded-lg shadow-lg"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        >
+          <AnimatePresence mode="wait">
+            {step === 1 && (
+              <motion.form
+                onSubmit={handleNextStep}
+                className="space-y-6"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.3 }}
               >
-                Next
-              </button>
-            </form>
-          )}
-
-          {step === 2 && (
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Choose your Avatar
-                </label>
-                <div className="flex justify-center space-x-2">
-                  {AVATAR_OPTIONS.map(avatarUrl => (
-                    <img
-                      key={avatarUrl}
-                      src={avatarUrl}
-                      alt="avatar"
-                      onClick={() => setFormData(prev => ({ ...prev, avatar: avatarUrl }))}
-                      className={`w-12 h-12 rounded-full cursor-pointer border-4 transition-all ${formData.avatar === avatarUrl ? 'border-brand-green' : 'border-transparent hover:border-gray-300'}`}
+                {displayError && <p className="text-red-500 text-sm text-center">{displayError}</p>}
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                    Full Name
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <UserIcon className="text-gray-400" />
+                    </div>
+                    <input
+                      type="text"
+                      name="name"
+                      id="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-brand-green focus:border-brand-green text-gray-900"
+                      placeholder="Your Name"
+                      required
                     />
-                  ))}
+                  </div>
                 </div>
-              </div>
-              <div>
-                <label htmlFor="ward" className="block text-sm font-medium text-gray-700 mb-1">
-                  Select your Ward
-                </label>
-                <select
-                  name="ward"
-                  id="ward"
-                  value={formData.ward}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-brand-green focus:border-brand-green text-gray-900"
-                >
-                  {wards.map(ward => (
-                    <option key={ward.id} value={ward.name}>
-                      {ward.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex space-x-4">
-                <button
-                  type="button"
-                  onClick={() => setStep(1)}
-                  className="w-full bg-gray-200 text-gray-800 font-bold py-3 px-4 rounded-lg hover:bg-gray-300 transition-colors duration-300"
-                >
-                  Back
-                </button>
-                <button
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                    Email
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <AtSymbolIcon className="text-gray-400" />
+                    </div>
+                    <input
+                      type="email"
+                      name="email"
+                      id="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-brand-green focus:border-brand-green text-gray-900"
+                      placeholder="you@example.com"
+                      required
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Password
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <LockClosedIcon className="text-gray-400" />
+                    </div>
+                    <input
+                      type="password"
+                      name="password"
+                      id="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-brand-green focus:border-brand-green text-gray-900"
+                      placeholder="••••••••"
+                      required
+                    />
+                  </div>
+                </div>
+                <motion.button
                   type="submit"
-                  disabled={loading}
-                  className="w-full bg-brand-green text-white font-bold py-3 px-4 rounded-lg hover:bg-brand-green-dark transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-brand-green text-white font-bold py-3 px-4 rounded-lg hover:bg-brand-green-dark transition-colors duration-300"
+                  whileHover={{ scale: 1.02, boxShadow: '0 10px 30px rgba(16, 185, 129, 0.3)' }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  {loading ? 'Creating Account...' : 'Create Account'}
-                </button>
-              </div>
-            </form>
-          )}
-        </div>
-        <p className="text-center text-gray-600 mt-6">
+                  Next
+                </motion.button>
+              </motion.form>
+            )}
+
+            {step === 2 && (
+              <motion.form
+                onSubmit={handleSubmit}
+                className="space-y-6"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Choose your Avatar
+                  </label>
+                  <div className="flex justify-center space-x-2">
+                    {AVATAR_OPTIONS.map((avatarUrl, index) => (
+                      <motion.img
+                        key={avatarUrl}
+                        src={avatarUrl}
+                        alt="avatar"
+                        onClick={() => setFormData(prev => ({ ...prev, avatar: avatarUrl }))}
+                        className={`w-12 h-12 rounded-full cursor-pointer border-4 transition-all ${formData.avatar === avatarUrl ? 'border-brand-green' : 'border-transparent hover:border-gray-300'}`}
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: index * 0.1, duration: 0.3 }}
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        whileTap={{ scale: 0.95 }}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor="ward" className="block text-sm font-medium text-gray-700 mb-1">
+                    Select your Ward
+                  </label>
+                  <select
+                    name="ward"
+                    id="ward"
+                    value={formData.ward}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-brand-green focus:border-brand-green text-gray-900"
+                  >
+                    {wards.map(ward => (
+                      <option key={ward.id} value={ward.name}>
+                        {ward.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex space-x-4">
+                  <motion.button
+                    type="button"
+                    onClick={() => setStep(1)}
+                    className="w-full bg-gray-200 text-gray-800 font-bold py-3 px-4 rounded-lg hover:bg-gray-300 transition-colors duration-300"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Back
+                  </motion.button>
+                  <motion.button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-brand-green text-white font-bold py-3 px-4 rounded-lg hover:bg-brand-green-dark transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    whileHover={{
+                      scale: loading ? 1 : 1.02,
+                      boxShadow: '0 10px 30px rgba(16, 185, 129, 0.3)',
+                    }}
+                    whileTap={{ scale: loading ? 1 : 0.98 }}
+                  >
+                    {loading ? 'Creating Account...' : 'Create Account'}
+                  </motion.button>
+                </div>
+              </motion.form>
+            )}
+          </AnimatePresence>
+        </motion.div>
+        <motion.p
+          className="text-center text-gray-600 mt-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
+        >
           Already have an account?{' '}
-          <button
+          <motion.button
             onClick={onSwitchToLogin}
             className="font-semibold text-brand-green hover:underline"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             Log In
-          </button>
-        </p>
-      </div>
+          </motion.button>
+        </motion.p>
+      </motion.div>
     </div>
   );
 };

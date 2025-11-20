@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from 'react';
-import { MOCK_RECYCLING_CENTERS, COMMUNITY_GOAL_KG, COMMUNITY_PROGRESS_KG } from '../constants';
-import { RecyclingCenter, RecyclingMaterial } from '../types';
+import React, { useMemo, useState } from 'react';
+import { LocationPinIcon, RecyclingIcon } from '../components/Icons';
 import RecycleLogModal from '../components/RecycleLogModal';
-import { RecyclingIcon, LocationPinIcon } from '../components/Icons';
+import { COMMUNITY_GOAL_KG, COMMUNITY_PROGRESS_KG, MOCK_RECYCLING_CENTERS } from '../constants';
+import { RecyclingCenter, RecyclingMaterial } from '../types';
 
 interface RecyclePageProps {
   onLogRecycle: (materials: RecyclingMaterial[]) => void;
@@ -164,7 +164,7 @@ const RecyclePage: React.FC<RecyclePageProps> = ({ onLogRecycle }) => {
           onClick={() => setShowLogModal(true)}
           className="w-full max-w-sm bg-brand-blue text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-brand-blue-dark transition-transform"
         >
-          Log a Recycling Drop-off (+75 SP)
+          Log a Recycling Drop-off (+75 Karma)
         </button>
       </div>
 

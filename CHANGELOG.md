@@ -8,9 +8,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 - **Seamless Marketplace-Forum Integration:** Implemented a new feature that allows users to discuss merchandise items in the forum. A "Discuss" button on the product page now automatically creates a dedicated, pre-populated forum thread if one doesn't exist, and navigates the user directly to it.
+- **Backend API Integration:** Connected the frontend to a real backend API for authentication, issues management, and rewards system.
+- **Issues Management API:** Integrated full CRUD operations for issues through the backend API with real-time updates.
+- **Admin API Integration:** Connected admin panel to backend for managing rewards, issues, and system data.
+- **Authentication System:** Implemented JWT-based authentication with login, register, token refresh, and profile management.
+- **API Error Handling:** Added comprehensive error handling for all API calls with user-friendly error messages.
+- **Loading States:** Added loading indicators and skeleton screens for better UX during API calls.
+- **Optimistic UI Updates:** Implemented optimistic UI updates for upvoting and volunteering on issues for instant feedback.
+- **Profile Page Integration:** Connected profile page to backend API for fetching and updating user data.
+- **Leaderboards API:** Integrated leaderboards with backend data for real-time rankings.
+- **Splash Screen Animations:** Added professional animated splash screen with brand logo and smooth transitions.
+- **Login Page Animations:** Implemented Framer Motion animations throughout the login flow with gradient backgrounds.
+- **Register Page Animations:** Added smooth step transitions and interactive avatar selection with animations.
+- **Developer Tools:** Added comprehensive development documentation and API setup guides.
+
+### Changed
+- **State Management:** Migrated from localStorage-only state to hybrid approach with API backend for issues and authentication.
+- **API Client Architecture:** Implemented centralized API client with interceptors for authentication and error handling.
+- **Component Loading:** Lazy-loaded all pages for improved initial load performance.
+- **Background Gradient:** Updated login and register pages with modern emerald-teal-cyan gradient backgrounds.
 
 ### Fixed
 - **Application Crash:** Restored the main `App.tsx` component, which was previously incomplete, fixing a critical `SyntaxError` that prevented the application from loading.
+- **Authentication Flow:** Fixed token storage and retrieval issues preventing successful login.
+- **API Response Handling:** Corrected response format parsing to properly extract data from API responses.
+- **Component Alignment:** Fixed splash screen centering and responsive spacing issues.
+- **Modal Z-Index:** Resolved z-index conflicts preventing modals from appearing above other UI elements.
 
 ## [3.0.0] - 2024-08-03
 

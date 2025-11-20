@@ -1,5 +1,6 @@
 import React, { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import BottomNav from './components/BottomNav';
+import CivicNudgeModal from './components/CivicNudgeModal';
 import CreateThreadModal from './components/CreateThreadModal';
 import ErrorBoundary from './components/ErrorBoundary';
 import Header from './components/Header';
@@ -10,6 +11,7 @@ import ReportDisturbanceModal from './components/ReportDisturbanceModal';
 import ReportModal from './components/ReportModal';
 import SkipToContent from './components/SkipToContent';
 import { SplashScreen } from './components/SplashScreen';
+import StudentQuestsModal from './components/StudentQuestsModal';
 import Toast from './components/Toast';
 import {
   INITIAL_DISTURBANCES,
@@ -166,6 +168,8 @@ const App: React.FC = () => {
   const [isDisturbanceModalOpen, setIsDisturbanceModalOpen] = useState(false);
   const [isMicroActionsModalOpen, setIsMicroActionsModalOpen] = useState(false);
   const [isCreateThreadModalOpen, setIsCreateThreadModalOpen] = useState(false);
+  const [isStudentQuestsOpen, setIsStudentQuestsOpen] = useState(false);
+  const [isCivicNudgeOpen, setIsCivicNudgeOpen] = useState(false);
   const [viewingReceipt, setViewingReceipt] = useState<PurchaseReceipt | null>(null);
 
   // Derived state
@@ -340,6 +344,7 @@ const App: React.FC = () => {
   );
 
   const handleLogin = (email: string) => {
+    // AuthContext already handled API login, just sync UI state
     const userToLogin = allUsers.find(
       user => user.name.toLowerCase().replace(' ', '') + '@safa.com' === email
     );
@@ -404,7 +409,7 @@ const App: React.FC = () => {
     };
     // Issues are now managed by the useIssues hook via createIssueAPI
     // The hook automatically updates the issues list when createIssue is called
-    addPoints(REWARD_POINTS.REPORT_ISSUE, `+${REWARD_POINTS.REPORT_ISSUE} SP for your report!`);
+    addPoints(REWARD_POINTS.REPORT_ISSUE, `+${REWARD_POINTS.REPORT_ISSUE} Karma for your report!`);
     updateUserStats('reportsMade', 1);
     logActivity(currentUser.name, {
       type: 'reported',
@@ -433,7 +438,7 @@ const App: React.FC = () => {
     };
 
     setDisturbances(prev => [newDisturbance, ...prev]);
-    addPoints(20, '+20 SP for reporting a disturbance.');
+    addPoints(20, '+20 Karma for reporting a disturbance.');
     updateUserStats('disturbanceReports', 1);
     setIsDisturbanceModalOpen(false);
   };
@@ -479,7 +484,7 @@ const App: React.FC = () => {
 
   const handleLogRecycle = (materials: RecyclingMaterial[]) => {
     if (!currentUser) return;
-    addPoints(REWARD_POINTS.RECYCLE_LOG, `+${REWARD_POINTS.RECYCLE_LOG} SP for recycling!`);
+    addPoints(REWARD_POINTS.RECYCLE_LOG, `+${REWARD_POINTS.RECYCLE_LOG} Karma for recycling!`);
     updateUserStats('recyclingLogs', 1);
     logActivity(currentUser.name, {
       type: 'recycled_item',
@@ -492,7 +497,7 @@ const App: React.FC = () => {
     if (!currentUser) return;
     addPoints(
       REWARD_POINTS.SUPPLY_KIT_PICKUP,
-      `+${REWARD_POINTS.SUPPLY_KIT_PICKUP} SP for picking up a kit!`
+      `+${REWARD_POINTS.SUPPLY_KIT_PICKUP} Karma for picking up a kit!`
     );
     updateUserStats('supplyKitsPickedUp', 1);
     updateUserStats('supplyKitsToday', 1);
@@ -503,9 +508,47 @@ const App: React.FC = () => {
     });
   };
 
+  const handleQuestSubmit = async (questId: number, proof: File) => {
+    if (!currentUser) return;
+
+    try {
+      // TODO: POST to backend /api/student-quests/:id/submit
+      console.log('Quest submitted:', questId, proof);
+
+      const questPoints = 50;
+      addPoints(questPoints, `+${questPoints} Karma for completing quest!`);
+      logActivity(currentUser.name, {
+        type: 'quest_completed',
+        description: `completed a student quest`,
+        pointsChange: questPoints,
+      });
+
+      showToast('Quest submitted successfully! Teacher will review.', 'success');
+      setIsStudentQuestsOpen(false);
+    } catch (error) {
+      console.error('Quest submission error:', error);
+      showToast('Failed to submit quest. Please try again.', 'error');
+    }
+  };
+
+  const handleNudgeSend = async (friendName: string, message: string, memeId?: number) => {
+    if (!currentUser) return;
+
+    try {
+      // TODO: POST to backend /api/civic-nudges
+      console.log('Nudge sent to:', friendName, message, memeId);
+
+      showToast(`Anonymous nudge sent to ${friendName}! 📨`, 'success');
+      setIsCivicNudgeOpen(false);
+    } catch (error) {
+      console.error('Nudge send error:', error);
+      showToast('Failed to send nudge. Please try again.', 'error');
+    }
+  };
+
   const handleLogMicroAction = (action: MicroAction) => {
     if (!currentUser || currentUser.stats.microActionsToday >= 3) return;
-    addPoints(action.points, `+${action.points} SP for your quick action!`);
+    addPoints(action.points, `+${action.points} Karma for your quick action!`);
     updateUserStats('microActionsLogged', 1);
     updateUserStats('microActionsToday', 1);
     logActivity(currentUser.name, {
@@ -885,7 +928,7 @@ const App: React.FC = () => {
       );
       addPoints(
         REWARD_POINTS.SAFETY_KIT_REDEMPTION,
-        `+${REWARD_POINTS.SAFETY_KIT_REDEMPTION} SP for your purchase!`,
+        `+${REWARD_POINTS.SAFETY_KIT_REDEMPTION} Karma for your purchase!`,
         redemption.userName
       );
       updateUserStats('safetyKitsRedeemed', 1, redemption.userName);
@@ -966,6 +1009,12 @@ const App: React.FC = () => {
 
   // Show splash screen on first load
   if (showSplash) {
+    // Clear any existing auth tokens and user data to prevent auto-login
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('safa_access_token');
+      localStorage.removeItem('safa_refresh_token');
+      localStorage.removeItem('safaNepal-currentUser');
+    }
     return <SplashScreen onComplete={() => setShowSplash(false)} />;
   }
 
@@ -1047,6 +1096,8 @@ const App: React.FC = () => {
             onOpenReportModal={() => setIsReportModalOpen(true)}
             onOpenDisturbanceModal={() => setIsDisturbanceModalOpen(true)}
             onOpenMicroActionsModal={() => setIsMicroActionsModalOpen(true)}
+            onOpenStudentQuestsModal={() => setIsStudentQuestsOpen(true)}
+            onOpenCivicNudgeModal={() => setIsCivicNudgeOpen(true)}
             featureFlags={featureFlags}
             onViewThread={handleViewThread}
             issuesLoading={issuesLoading}
@@ -1161,6 +1212,8 @@ const App: React.FC = () => {
             onOpenReportModal={() => setIsReportModalOpen(true)}
             onOpenDisturbanceModal={() => setIsDisturbanceModalOpen(true)}
             onOpenMicroActionsModal={() => setIsMicroActionsModalOpen(true)}
+            onOpenStudentQuestsModal={() => setIsStudentQuestsOpen(true)}
+            onOpenCivicNudgeModal={() => setIsCivicNudgeOpen(true)}
             featureFlags={featureFlags}
             onViewThread={handleViewThread}
             issuesLoading={issuesLoading}
@@ -1188,10 +1241,16 @@ const App: React.FC = () => {
             onOpenReportModal={() => setIsReportModalOpen(true)}
             onOpenDisturbanceModal={() => setIsDisturbanceModalOpen(true)}
             onOpenMicroActionsModal={() => setIsMicroActionsModalOpen(true)}
+            onOpenStudentQuestsModal={() => setIsStudentQuestsOpen(true)}
+            onOpenCivicNudgeModal={() => setIsCivicNudgeOpen(true)}
             featureFlags={featureFlags}
             onViewThread={handleViewThread}
             issuesLoading={issuesLoading}
             issuesError={issuesError}
+            onNavigateToChallengesTab={() => {
+              setCurrentPage('leaderboards');
+              setLeaderboardInitialTab('challenges');
+            }}
           />
         );
     }
@@ -1250,6 +1309,20 @@ const App: React.FC = () => {
           <CreateThreadModal
             onClose={() => setIsCreateThreadModalOpen(false)}
             onSubmit={handleCreateThread}
+          />
+        )}
+        {isStudentQuestsOpen && (
+          <StudentQuestsModal
+            onClose={() => setIsStudentQuestsOpen(false)}
+            onSubmitQuest={handleQuestSubmit}
+            schoolId={currentUser?.schoolId}
+          />
+        )}
+        {isCivicNudgeOpen && (
+          <CivicNudgeModal
+            onClose={() => setIsCivicNudgeOpen(false)}
+            onSendNudge={handleNudgeSend}
+            friends={allUsers.map(u => ({ id: u.id, name: u.name, avatar: u.avatar }))}
           />
         )}
       </div>

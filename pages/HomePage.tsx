@@ -37,6 +37,7 @@ import {
 import IssueDetailModal from '../components/IssueDetailModal';
 import LiveActivityFeed from '../components/LiveActivityFeed';
 import OrganizeEventModal from '../components/OrganizeEventModal';
+import SeasonalCampaignBanner from '../components/SeasonalCampaignBanner';
 import { COMMUNITY_GOAL_KG, COMMUNITY_PROGRESS_KG } from '../constants';
 
 interface HomePageProps {
@@ -73,6 +74,8 @@ interface HomePageProps {
   onOpenReportModal?: () => void;
   onOpenDisturbanceModal?: () => void;
   onOpenMicroActionsModal?: () => void;
+  onOpenStudentQuestsModal?: () => void;
+  onOpenCivicNudgeModal?: () => void;
   featureFlags: FeatureFlags;
   onViewThread: (threadId: number) => void;
   onNavigateToChallengesTab: () => void;
@@ -110,14 +113,23 @@ const StickyActionHeader: React.FC<{
   onOpenReportModal?: () => void;
   onOpenDisturbanceModal?: () => void;
   onOpenMicroActionsModal?: () => void;
+  onOpenStudentQuestsModal?: () => void;
+  onOpenCivicNudgeModal?: () => void;
   featureFlags: FeatureFlags;
-}> = ({ onOpenReportModal, onOpenDisturbanceModal, onOpenMicroActionsModal, featureFlags }) => {
+}> = ({
+  onOpenReportModal,
+  onOpenDisturbanceModal,
+  onOpenMicroActionsModal,
+  onOpenStudentQuestsModal,
+  onOpenCivicNudgeModal,
+  featureFlags,
+}) => {
   const buttonStyle =
     'flex flex-col items-center gap-1 font-semibold text-xs p-2 rounded-lg transition-colors duration-200 hover:bg-gray-100';
 
   return (
     <div className="fixed top-16 left-0 right-0 bg-white/95 backdrop-blur-lg shadow-md z-40 animate-fadeInDown">
-      <div className="container mx-auto px-4 py-2 flex justify-around items-center">
+      <div className="container mx-auto px-4 py-2 flex justify-around items-center overflow-x-auto">
         {featureFlags.microActions && (
           <button onClick={onOpenMicroActionsModal} className={`${buttonStyle} text-brand-blue`}>
             <AddTaskIcon className="w-6 h-6" />
@@ -132,6 +144,18 @@ const StickyActionHeader: React.FC<{
           <button onClick={onOpenDisturbanceModal} className={`${buttonStyle} text-amber-500`}>
             <WarningIcon className="w-6 h-6" />
             <span>Disturbance</span>
+          </button>
+        )}
+        {onOpenStudentQuestsModal && (
+          <button onClick={onOpenStudentQuestsModal} className={`${buttonStyle} text-purple-600`}>
+            <BroomIcon className="w-6 h-6" />
+            <span>Quests</span>
+          </button>
+        )}
+        {onOpenCivicNudgeModal && (
+          <button onClick={onOpenCivicNudgeModal} className={`${buttonStyle} text-orange-600`}>
+            <MegaphoneIcon className="w-6 h-6" />
+            <span>Nudge</span>
           </button>
         )}
       </div>
@@ -204,7 +228,9 @@ const MayorChallengeCards: React.FC<{
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {challenges.map(challenge => {
-          const progress = Math.min((userPoints / challenge.target_points) * 100, 100);
+          const safeUserPoints = userPoints || 0;
+          const safeTargetPoints = challenge.target_points || 1;
+          const progress = Math.min((safeUserPoints / safeTargetPoints) * 100, 100);
           const daysLeft = Math.ceil(
             (new Date(challenge.end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
           );
@@ -229,7 +255,7 @@ const MayorChallengeCards: React.FC<{
                 <div className="flex justify-between text-sm mb-1">
                   <span className="text-gray-600">Your Progress</span>
                   <span className="font-semibold text-purple-600">
-                    {userPoints.toLocaleString()} / {challenge.target_points.toLocaleString()} SP
+                    {safeUserPoints.toLocaleString()} / {safeTargetPoints.toLocaleString()} Karma
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
@@ -651,6 +677,8 @@ const HomePage: React.FC<HomePageProps> = ({
   onOpenReportModal,
   onOpenDisturbanceModal,
   onOpenMicroActionsModal,
+  onOpenStudentQuestsModal,
+  onOpenCivicNudgeModal,
   featureFlags,
   onViewThread,
   onNavigateToChallengesTab,
@@ -796,9 +824,20 @@ const HomePage: React.FC<HomePageProps> = ({
           onOpenReportModal={onOpenReportModal}
           onOpenDisturbanceModal={onOpenDisturbanceModal}
           onOpenMicroActionsModal={onOpenMicroActionsModal}
+          onOpenStudentQuestsModal={onOpenStudentQuestsModal}
+          onOpenCivicNudgeModal={onOpenCivicNudgeModal}
           featureFlags={featureFlags}
         />
       )}
+
+      {/* Seasonal Campaign Banner */}
+      <SeasonalCampaignBanner
+        onViewDetails={() => {
+          // TODO: Open campaign details modal
+          console.log('Campaign details clicked');
+        }}
+      />
+
       {activeChallenge && (
         <ChallengeBanner
           challenge={activeChallenge}
@@ -875,7 +914,7 @@ const HomePage: React.FC<HomePageProps> = ({
         {currentUser && (
           <MayorChallengeCards
             currentUserWardId={parseInt(currentUser.ward.match(/\d+/)?.[0] || '0')}
-            userPoints={currentUser.points}
+            userPoints={currentUser.points || 0}
             onNavigateToLeaderboard={onNavigateToChallengesTab}
           />
         )}

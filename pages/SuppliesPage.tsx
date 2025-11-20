@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { MOCK_SUPPLY_POINTS } from '../constants';
-import { SupplyPoint, UserRank, FeatureFlags } from '../types';
-import SupplyLogModal from '../components/SupplyLogModal';
-import SafetyKitRedemptionModal from '../components/SafetyKitRedemptionModal';
 import { LocationPinIcon, SuppliesIcon } from '../components/Icons';
+import SafetyKitRedemptionModal from '../components/SafetyKitRedemptionModal';
+import SupplyLogModal from '../components/SupplyLogModal';
+import { MOCK_SUPPLY_POINTS } from '../constants';
+import { FeatureFlags, SupplyPoint, UserRank } from '../types';
 
 interface SuppliesPageProps {
   onLogSupplyPickup: (supplyPoint: SupplyPoint) => void;
@@ -122,7 +122,7 @@ const SuppliesPage: React.FC<SuppliesPageProps> = ({
           disabled={hasLoggedToday}
           className="w-full max-w-sm bg-brand-blue text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-brand-blue-dark transition-transform disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
-          {hasLoggedToday ? 'Kit Picked Up Today' : 'Log a Kit Pick-up (+25 SP)'}
+          {hasLoggedToday ? 'Kit Picked Up Today' : 'Log a Kit Pick-up (+25 Karma)'}
         </button>
 
         {featureFlags.safetyKitRedemption && (
@@ -130,7 +130,7 @@ const SuppliesPage: React.FC<SuppliesPageProps> = ({
             onClick={() => setShowRedemptionModal(true)}
             className="w-full max-w-sm bg-brand-green text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-brand-green-dark transition-transform"
           >
-            Redeem SP for Purchase
+            Redeem Karma for Purchase
           </button>
         )}
       </div>

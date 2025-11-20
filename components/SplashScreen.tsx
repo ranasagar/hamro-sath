@@ -80,10 +80,10 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         </div>
 
         {/* Main content container */}
-        <div className="relative z-10 flex flex-col items-center px-6">
+        <div className="relative z-10 flex flex-col items-center justify-center px-6 w-full">
           {/* Logo animation */}
           <motion.div
-            className="relative mb-8"
+            className="relative mb-6 md:mb-8"
             initial={{ scale: 0, rotate: -180 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{
@@ -153,7 +153,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
 
           {/* App name */}
           <motion.div
-            className="text-center mb-4"
+            className="text-center mb-3 md:mb-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
@@ -189,7 +189,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
           <AnimatePresence>
             {stage !== 'logo' && (
               <motion.div
-                className="flex gap-4 mb-8"
+                className="flex gap-3 md:gap-4 mb-6 md:mb-8 flex-wrap justify-center"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -233,7 +233,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
           <AnimatePresence>
             {stage === 'tagline' || stage === 'complete' ? (
               <motion.div
-                className="text-center mb-8"
+                className="text-center mb-6 md:mb-8"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}

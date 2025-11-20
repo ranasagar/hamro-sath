@@ -53,9 +53,10 @@ export const REWARD_POINTS = {
   RECYCLE_LOG: 75,
   SUPPLY_KIT_PICKUP: 25,
   SAFETY_KIT_REDEMPTION: 100,
+  QUEST_COMPLETION: 50,
 };
 
-export const SP_TO_NPR_RATE = 10; // 10 SP = 1 NPR
+export const KARMA_TO_NPR_RATE = 10; // 10 Karma = 1 NPR
 
 export const COMMUNITY_GOAL_KG = 1000;
 export const COMMUNITY_PROGRESS_KG = 350;
@@ -376,7 +377,7 @@ export const INITIAL_HERO_SLIDES: HeroSlide[] = [
   {
     id: 2,
     title: 'New Partner: Himalayan Java',
-    subtitle: 'Your next coffee is on us. Redeem 500 SP for a free coffee.',
+    subtitle: 'Your next coffee is on us. Redeem 500 Karma for a free coffee.',
     imageUrl:
       'https://images.unsplash.com/photo-1559496417-e7f25cb247f3?q=80&w=1964&auto=format&fit=crop',
     ctaText: 'View Details',

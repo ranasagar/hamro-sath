@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { dataUrlToFile, enhanceImage } from '../imageUtils';
 import { IssueCategory } from '../types';
+import { addGPSWatermarkAuto, verifyNepalGPS } from '../utils/gpsWatermark';
 import { CloseIcon } from './Icons';
 
 interface ReportModalProps {
@@ -17,6 +18,8 @@ const ReportModal: React.FC<ReportModalProps> = ({ onClose, onSubmit }) => {
   const [isEnhanced, setIsEnhanced] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [locationStatus, setLocationStatus] = useState('Fetching location...');
+  const [gpsWatermarkApplied, setGpsWatermarkApplied] = useState(false);
+  const [gpsLocation, setGpsLocation] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -29,18 +32,52 @@ const ReportModal: React.FC<ReportModalProps> = ({ onClose, onSubmit }) => {
     );
   }, []);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setPhoto(file);
-      setIsEnhanced(false);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const result = reader.result as string;
-        setPhotoPreview(result);
-        setOriginalPhotoPreview(result);
-      };
-      reader.readAsDataURL(file);
+      setLocationStatus('Adding GPS watermark...');
+
+      try {
+        // Add GPS watermark automatically
+        const { file: watermarkedFile, gpsData } = await addGPSWatermarkAuto(file);
+
+        // Verify location is in Nepal
+        if (!verifyNepalGPS(gpsData.latitude, gpsData.longitude)) {
+          alert(
+            'Warning: Location detected outside Nepal. Please ensure you are reporting from within Nepal.'
+          );
+        }
+
+        setPhoto(watermarkedFile);
+        setGpsWatermarkApplied(true);
+        setGpsLocation(`${gpsData.latitude.toFixed(6)}, ${gpsData.longitude.toFixed(6)}`);
+        setLocationStatus('GPS watermark added successfully ✓');
+        setIsEnhanced(false);
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const result = reader.result as string;
+          setPhotoPreview(result);
+          setOriginalPhotoPreview(result);
+        };
+        reader.readAsDataURL(watermarkedFile);
+      } catch (error) {
+        console.error('GPS watermark error:', error);
+        setLocationStatus('GPS unavailable. Using photo without watermark.');
+
+        // Fallback: use original file without watermark
+        setPhoto(file);
+        setGpsWatermarkApplied(false);
+        setIsEnhanced(false);
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const result = reader.result as string;
+          setPhotoPreview(result);
+          setOriginalPhotoPreview(result);
+        };
+        reader.readAsDataURL(file);
+      }
     }
   };
 
@@ -192,7 +229,19 @@ const ReportModal: React.FC<ReportModalProps> = ({ onClose, onSubmit }) => {
                 )}
               </div>
             </div>
-            <p className="text-xs text-center text-gray-500">{locationStatus}</p>
+            <div className="text-center space-y-2">
+              <p className="text-xs text-gray-500">{locationStatus}</p>
+              {gpsWatermarkApplied && gpsLocation && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-2">
+                  <p className="text-xs text-green-800 font-medium">
+                    📍 GPS Verified: {gpsLocation}
+                  </p>
+                  <p className="text-xs text-green-600 mt-1">
+                    Photo authenticated with location and timestamp
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
           <div className="flex justify-end space-x-3 p-4 bg-gray-50 rounded-b-lg">
             <button
