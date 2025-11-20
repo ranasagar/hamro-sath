@@ -34,6 +34,11 @@ import {
   TrashIcon,
   WeedPullIcon,
 } from './components/Icons';
+// Import comprehensive karma points system
+import {
+  KARMA_POINTS as NEW_KARMA_POINTS,
+  KARMA_TO_NPR_RATE as NEW_KARMA_TO_NPR_RATE,
+} from './config/karmaPoints';
 
 // Icons for badges using the new vibrant icon set
 const ToleTrailblazerIcon = () => <StarIcon className="h-8 w-8" />;
@@ -45,18 +50,19 @@ const GoodSamaritanIcon = () => <HeartIcon className="h-8 w-8" />;
 const StreetSweeperIcon = () => <SparklesIcon className="h-8 w-8" />;
 const CivicSentinelIcon = () => <CheckBadgeIcon className="h-8 w-8" />;
 
+// Legacy REWARD_POINTS for backward compatibility (deprecated - use KARMA_POINTS from config/karmaPoints.ts)
 export const REWARD_POINTS = {
-  REPORT_ISSUE: 50,
-  PARTICIPATE_IN_EVENT: 100,
-  COMPLETE_ORGANIZED_EVENT: 250, // Bonus for the organizer
-  QUIZ_COMPLETE: 50,
-  RECYCLE_LOG: 75,
-  SUPPLY_KIT_PICKUP: 25,
-  SAFETY_KIT_REDEMPTION: 100,
-  QUEST_COMPLETION: 50,
+  REPORT_ISSUE: NEW_KARMA_POINTS.REPORT_ISSUE,
+  PARTICIPATE_IN_EVENT: NEW_KARMA_POINTS.PARTICIPATE_IN_EVENT,
+  COMPLETE_ORGANIZED_EVENT: NEW_KARMA_POINTS.ORGANIZE_EVENT,
+  QUIZ_COMPLETE: NEW_KARMA_POINTS.COMPLETE_QUIZ,
+  RECYCLE_LOG: NEW_KARMA_POINTS.RECYCLE_LOG,
+  SUPPLY_KIT_PICKUP: NEW_KARMA_POINTS.SUPPLY_KIT_PICKUP,
+  SAFETY_KIT_REDEMPTION: NEW_KARMA_POINTS.SAFETY_KIT_REDEMPTION,
+  QUEST_COMPLETION: NEW_KARMA_POINTS.QUEST_COMPLETION,
 };
 
-export const KARMA_TO_NPR_RATE = 10; // 10 Karma = 1 NPR
+export const KARMA_TO_NPR_RATE = NEW_KARMA_TO_NPR_RATE;
 
 export const COMMUNITY_GOAL_KG = 1000;
 export const COMMUNITY_PROGRESS_KG = 350;

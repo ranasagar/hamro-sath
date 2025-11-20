@@ -13,6 +13,7 @@ import SkipToContent from './components/SkipToContent';
 import { SplashScreen } from './components/SplashScreen';
 import StudentQuestsModal from './components/StudentQuestsModal';
 import Toast from './components/Toast';
+import { getRewardMessage, KARMA_POINTS } from './config/karmaPoints';
 import {
   INITIAL_DISTURBANCES,
   INITIAL_FEATURE_FLAGS,
@@ -892,10 +893,16 @@ const App: React.FC = () => {
       posts: [newPost],
     };
     setForumThreads(prev => [newThread, ...prev]);
+
+    // Award points for creating thread
+    const points =
+      imageUrl || youtubeLink ? KARMA_POINTS.CREATE_THREAD_WITH_MEDIA : KARMA_POINTS.CREATE_THREAD;
+    addPoints(points, getRewardMessage('CREATE_THREAD', points));
+
     logActivity(currentUser.name, {
       type: 'forum_thread_created',
       description: `started a new discussion: "${title}"`,
-      pointsChange: 0,
+      pointsChange: points,
     });
     setIsCreateThreadModalOpen(false);
   };
@@ -942,21 +949,32 @@ const App: React.FC = () => {
         return thread;
       })
     );
+
+    // Award points for replying
+    const points =
+      imageUrl || youtubeLink ? KARMA_POINTS.POST_REPLY_WITH_MEDIA : KARMA_POINTS.POST_REPLY;
+    addPoints(points, getRewardMessage('POST_REPLY', points));
+
     logActivity(currentUser.name, {
       type: 'forum_reply',
       description: `replied to a discussion`,
-      pointsChange: 0,
+      pointsChange: points,
     });
   };
 
   const handleVote = (threadId: number, postId: number, vote: 1 | -1) => {
     if (!currentUser) return;
+
+    let postAuthor: string | null = null;
+    let wasUpvote = false;
+
     setForumThreads(prev =>
       prev.map(thread => {
         if (thread.id === threadId) {
           const findAndVote = (posts: ForumPost[]): ForumPost[] => {
             return posts.map(p => {
               if (p.id === postId) {
+                postAuthor = p.user;
                 const existingVote = p.votes[currentUser!.name] || 0;
                 let newScore = p.score;
                 const newVotes = { ...p.votes };
@@ -964,9 +982,11 @@ const App: React.FC = () => {
                   // User is undoing their vote
                   newScore -= vote;
                   delete newVotes[currentUser!.name];
+                  wasUpvote = false;
                 } else {
                   newScore += vote - existingVote;
                   newVotes[currentUser!.name] = vote;
+                  wasUpvote = vote === 1 && existingVote !== 1;
                 }
                 return { ...p, score: newScore, votes: newVotes };
               }
@@ -981,6 +1001,25 @@ const App: React.FC = () => {
         return thread;
       })
     );
+
+    // Award points for giving an upvote
+    if (wasUpvote && vote === 1) {
+      addPoints(
+        KARMA_POINTS.GIVE_HELPFUL_UPVOTE,
+        getRewardMessage('GIVE_HELPFUL_UPVOTE', KARMA_POINTS.GIVE_HELPFUL_UPVOTE)
+      );
+
+      // Award points to the post author for receiving an upvote
+      if (postAuthor && postAuthor !== currentUser.name) {
+        // Note: In a full implementation, this would update the post author's points
+        // For now, we just log it as an activity
+        logActivity(postAuthor, {
+          type: 'forum_reply',
+          description: `received an upvote on their post`,
+          pointsChange: KARMA_POINTS.RECEIVE_UPVOTE,
+        });
+      }
+    }
   };
 
   const handleViewThread = (threadId: number) => {
