@@ -7,6 +7,7 @@ import { config } from './config';
 import { errorHandler } from './middleware/errorHandler';
 import { notFoundHandler } from './middleware/notFoundHandler';
 import { requestLogger } from './middleware/requestLogger';
+import advancedFeaturesRoutes from './routes/advancedFeatures';
 import authRoutes from './routes/auth.routes';
 import challengeRoutes from './routes/challenge.routes';
 import dbTestRoutes from './routes/dbtest.routes';
@@ -114,6 +115,9 @@ app.use(`/api/${config.apiVersion}/challenges`, challengeRoutes);
 
 // Upload routes
 app.use(`/api/${config.apiVersion}/upload`, uploadRoutes);
+
+// Advanced Features routes (Karma, Civic Hubs, Social Tools, Sustainability)
+app.use(`/api/${config.apiVersion}`, advancedFeaturesRoutes);
 
 // DB Test routes (temporary)
 app.use(`/api/${config.apiVersion}/db`, dbTestRoutes);
