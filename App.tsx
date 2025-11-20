@@ -9,6 +9,7 @@ import ReceiptModal from './components/ReceiptModal';
 import ReportDisturbanceModal from './components/ReportDisturbanceModal';
 import ReportModal from './components/ReportModal';
 import SkipToContent from './components/SkipToContent';
+import { SplashScreen } from './components/SplashScreen';
 import Toast from './components/Toast';
 import {
   INITIAL_DISTURBANCES,
@@ -152,6 +153,7 @@ const App: React.FC = () => {
   const [selectedThreadId, setSelectedThreadId] = useState<number | null>(null);
   const [forumSortBy, setForumSortBy] = useState<'top' | 'newest'>('top');
   const [leaderboardInitialTab, setLeaderboardInitialTab] = useState<string>('individual');
+  const [showSplash, setShowSplash] = useState(true);
 
   // Navigation wrapper that clears thread view
   const navigatePage = (page: Page) => {
@@ -961,6 +963,11 @@ const App: React.FC = () => {
     );
     showToast('Post deleted successfully', 'success');
   };
+
+  // Show splash screen on first load
+  if (showSplash) {
+    return <SplashScreen onComplete={() => setShowSplash(false)} />;
+  }
 
   // Page rendering logic
   if (!currentUser) {
